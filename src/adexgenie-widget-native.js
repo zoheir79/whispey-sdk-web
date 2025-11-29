@@ -185,7 +185,6 @@ class AdexGenieWidget {
 
       // Enable microphone
       await this.room.localParticipant.setMicrophoneEnabled(true);
-
     } catch (error) {
       console.error('Failed to connect:', error);
       roomContainer.innerHTML = `

@@ -1,7 +1,7 @@
 /**
  * AdexGenie Agent Widget - Standalone Integration
  * Version: 1.0.0
- * 
+ *
  * Usage:
  * <script src="adexgenie-widget.js"></script>
  * <script>
@@ -11,10 +11,9 @@
  *   });
  * </script>
  */
-
 import { Room } from 'livekit-client';
 
-(function() {
+(function () {
   'use strict';
 
   // Prevent multiple initializations
@@ -32,42 +31,44 @@ import { Room } from 'livekit-client';
 
   const shouldSuppressLog = (args) => {
     const message = args.join(' ').toLowerCase();
-    return message.includes('livekit') || 
-           message.includes('lk-') ||
-           message.includes('webrtc') ||
-           message.includes('signalclient') ||
-           message.includes('roomengine');
+    return (
+      message.includes('livekit') ||
+      message.includes('lk-') ||
+      message.includes('webrtc') ||
+      message.includes('signalclient') ||
+      message.includes('roomengine')
+    );
   };
 
-  console.log = function(...args) {
+  console.log = function (...args) {
     if (shouldSuppressLog(args)) {
       return; // Supprimer complètement
     }
     originalConsoleLog.apply(console, args);
   };
 
-  console.debug = function(...args) {
+  console.debug = function (...args) {
     if (shouldSuppressLog(args)) {
       return; // Supprimer complètement
     }
     originalConsoleDebug.apply(console, args);
   };
 
-  console.info = function(...args) {
+  console.info = function (...args) {
     if (shouldSuppressLog(args)) {
       return; // Supprimer complètement
     }
     originalConsoleInfo.apply(console, args);
   };
 
-  console.warn = function(...args) {
+  console.warn = function (...args) {
     if (shouldSuppressLog(args)) {
       return; // Supprimer complètement
     }
     originalConsoleWarn.apply(console, args);
   };
 
-  console.error = function(...args) {
+  console.error = function (...args) {
     if (shouldSuppressLog(args)) {
       return; // Supprimer complètement
     }
@@ -78,19 +79,19 @@ import { Room } from 'livekit-client';
     constructor() {
       this['AG-config'] = {
         agentId: null,
-        apiUrl: null,           // URL de l'API pour récupérer le JWT
-        apiKey: null,           // Clé API publique
+        apiUrl: null, // URL de l'API pour récupérer le JWT
+        apiKey: null, // Clé API publique
         // Couleurs du thème AdexGenie (basées sur le logo)
-        primaryColor: '#00A7E1',      // Bleu cyan principal
-        secondaryColor: '#0066A1',    // Bleu foncé
-        accentColor: '#00D4FF',       // Cyan clair
-        successColor: '#10b981',      // Vert
-        dangerColor: '#dc2626',       // Rouge
-        backgroundColor: '#f8f9fa',   // Fond clair
-        surfaceColor: '#ffffff',      // Surface blanche
-        textColor: '#1f2937',         // Texte sombre
-        textLightColor: '#6b7280',    // Texte gris
-        borderColor: '#e5e7eb'        // Bordures
+        primaryColor: '#00A7E1', // Bleu cyan principal
+        secondaryColor: '#0066A1', // Bleu foncé
+        accentColor: '#00D4FF', // Cyan clair
+        successColor: '#10b981', // Vert
+        dangerColor: '#dc2626', // Rouge
+        backgroundColor: '#f8f9fa', // Fond clair
+        surfaceColor: '#ffffff', // Surface blanche
+        textColor: '#1f2937', // Texte sombre
+        textLightColor: '#6b7280', // Texte gris
+        borderColor: '#e5e7eb', // Bordures
       };
       this['AG-shadowRoot'] = null;
       this['AG-container'] = null;
@@ -106,12 +107,12 @@ import { Room } from 'livekit-client';
         console.error('AdexGenie Widget: agentId is required');
         return;
       }
-      
+
       if (!config.apiUrl) {
         console.error('AdexGenie Widget: apiUrl is required');
         return;
       }
-      
+
       if (!config.apiKey) {
         console.error('AdexGenie Widget: apiKey is required');
         return;
@@ -120,7 +121,7 @@ import { Room } from 'livekit-client';
       // Merge config
       this['AG-config'] = {
         ...this['AG-config'],
-        ...config
+        ...config,
       };
 
       console.log('AdexGenie Widget initialized successfully');
@@ -131,13 +132,13 @@ import { Room } from 'livekit-client';
       this['AG-container'] = document.createElement('div');
       this['AG-container'].id = 'adexgenie-widget-root';
       // Remove default styles here, rely on CSS class
-      
+
       this['AG-shadowRoot'] = this['AG-container'].attachShadow({ mode: 'open' });
-      
+
       const style = document.createElement('style');
       style.textContent = this.getStyles();
       this['AG-shadowRoot'].appendChild(style);
-      
+
       const fab = document.createElement('button');
       fab.className = 'ag-fab';
       fab.innerHTML = `
@@ -146,7 +147,7 @@ import { Room } from 'livekit-client';
         </svg>
       `;
       fab.onclick = () => this.toggle();
-      
+
       this['AG-shadowRoot'].appendChild(fab);
       document.body.appendChild(this['AG-container']);
     }
@@ -161,20 +162,20 @@ import { Room } from 'livekit-client';
 
     open(mode) {
       if (this['AG-isOpen']) return;
-      
+
       this['AG-isOpen'] = true;
       this['AG-mode'] = mode;
-      
+
       // Create widget container
       const container = document.createElement('div');
       container.className = 'ag-widget-container active';
-      
+
       const content = document.createElement('div');
       content.className = 'ag-content';
       container.appendChild(content);
-      
+
       this['AG-shadowRoot'].appendChild(container);
-      
+
       // Update FAB icon
       const fab = this['AG-shadowRoot'].querySelector('.ag-fab');
       fab.classList.add('close');
@@ -192,22 +193,22 @@ import { Room } from 'livekit-client';
 
     close() {
       console.log('Closing widget...');
-      
+
       // Disconnect room first
       if (this['AG-room']) {
         this.disconnectRoom();
       }
-      
+
       this['AG-isOpen'] = false;
       this['AG-mode'] = null;
       this['AG-contentElement'] = null;
-      
+
       const container = this['AG-shadowRoot'].querySelector('.ag-widget-container');
       if (container) {
         container.classList.remove('active');
         setTimeout(() => container.remove(), 300);
       }
-      
+
       // Reset FAB
       const fab = this['AG-shadowRoot'].querySelector('.ag-fab');
       if (fab) {
@@ -576,40 +577,41 @@ import { Room } from 'livekit-client';
     async fetchConnectionDetails() {
       try {
         console.log('Fetching JWT token from:', this['AG-config'].apiUrl);
-        
+
         // Appeler l'API pour récupérer le JWT token
         const response = await fetch(this['AG-config'].apiUrl, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
-            'X-API-Key': this['AG-config'].apiKey  // API Key dans le header
+            'X-API-Key': this['AG-config'].apiKey, // API Key dans le header
           },
           body: JSON.stringify({
-            agent_id: this['AG-config'].agentId  // Agent ID dans le payload
-          })
+            agent_id: this['AG-config'].agentId, // Agent ID dans le payload
+          }),
         });
-        
+
         if (!response.ok) {
           const errorText = await response.text();
           throw new Error(`API returned ${response.status}: ${errorText}`);
         }
-        
+
         const apiData = await response.json();
-        
+
         // Formater les détails de connexion
         this['AG-connectionDetails'] = {
-          serverUrl: apiData.serverUrl || apiData.server_url,  // URL du serveur fournie par l'API
+          serverUrl: apiData.serverUrl || apiData.server_url, // URL du serveur fournie par l'API
           roomName: apiData.roomName || apiData.room_name,
           participantToken: apiData.token || apiData.jwt,
           participantName: apiData.participantName || 'user',
-          agentName: apiData.agentName || apiData.agent_name || 'Agent',  // Nom de l'agent fourni par l'API
-          metadata: apiData.metadata || {}
+          agentName: apiData.agentName || apiData.agent_name || 'Agent', // Nom de l'agent fourni par l'API
+          metadata: apiData.metadata || {},
         };
-        
+
         console.log('Connection details received successfully');
       } catch (error) {
         console.error('Error fetching connection details:', error);
-        const errorMessage = error instanceof Error ? error.message : 'Unable to connect to the server';
+        const errorMessage =
+          error instanceof Error ? error.message : 'Unable to connect to the server';
         this.showError('Connection Error', errorMessage);
       }
     }
@@ -680,7 +682,7 @@ import { Room } from 'livekit-client';
       if (micBtn) {
         micBtn.onclick = () => this.handleControl('mic', micBtn);
       }
-      
+
       if (endBtn) {
         endBtn.onclick = () => this.handleControl('end', endBtn);
       }
@@ -711,9 +713,11 @@ import { Room } from 'livekit-client';
         // Écouter les transcriptions natives LiveKit
         this['AG-room'].on('transcriptionReceived', (segments, participant, publication) => {
           console.log('Transcription received:', segments);
-          segments.forEach(segment => {
+          segments.forEach((segment) => {
             if (segment.final && segment.text) {
-              const isAgent = participant?.identity?.includes('agent') || participant?.identity === this['AG-connectionDetails'].agentName;
+              const isAgent =
+                participant?.identity?.includes('agent') ||
+                participant?.identity === this['AG-connectionDetails'].agentName;
               this.addMessage(segment.text, isAgent ? 'agent' : 'user');
             }
           });
@@ -726,10 +730,12 @@ import { Room } from 'livekit-client';
             const text = decoder.decode(payload);
             const data = JSON.parse(text);
             console.log('Data received:', data);
-            
+
             // Vérifier si c'est une transcription
             if (data.text || data.message) {
-              const isAgent = participant?.identity?.includes('agent') || participant?.identity === this['AG-connectionDetails'].agentName;
+              const isAgent =
+                participant?.identity?.includes('agent') ||
+                participant?.identity === this['AG-connectionDetails'].agentName;
               this.addMessage(data.text || data.message, isAgent ? 'agent' : 'user');
             }
           } catch (e) {
@@ -740,7 +746,9 @@ import { Room } from 'livekit-client';
         // Écouter les messages chat
         this['AG-room'].on('chatMessage', (message, participant) => {
           console.log('Chat message:', message);
-          const isAgent = participant?.identity?.includes('agent') || participant?.identity === this['AG-connectionDetails'].agentName;
+          const isAgent =
+            participant?.identity?.includes('agent') ||
+            participant?.identity === this['AG-connectionDetails'].agentName;
           this.addMessage(message.message, isAgent ? 'agent' : 'user');
         });
 
@@ -756,7 +764,6 @@ import { Room } from 'livekit-client';
         console.log('Microphone enabled');
 
         this.updateSessionBody(contentElement, 'Connected! Speak to start the conversation.');
-
       } catch (error) {
         console.error('Error connecting to room:', error);
         const errorMessage = error instanceof Error ? error.message : 'Unknown error occurred';
@@ -784,17 +791,17 @@ import { Room } from 'livekit-client';
       // Créer le message
       const messageDiv = document.createElement('div');
       messageDiv.className = `ag-message ${sender}`;
-      
+
       const now = new Date();
       const timeStr = now.toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' });
-      
+
       messageDiv.innerHTML = `
         <div class="ag-message-bubble">${text}</div>
         <div class="ag-message-time">${timeStr}</div>
       `;
-      
+
       sessionBody.appendChild(messageDiv);
-      
+
       // Scroll vers le bas
       sessionBody.scrollTop = sessionBody.scrollHeight;
     }
@@ -818,12 +825,12 @@ import { Room } from 'livekit-client';
     disconnectRoom() {
       if (this['AG-room']) {
         console.log('Disconnecting room and stopping all tracks...');
-        
+
         try {
           // Stop all local tracks if they exist
           if (this['AG-room'].localParticipant) {
             const participant = this['AG-room'].localParticipant;
-            
+
             // Stop audio tracks
             if (participant.audioTracks) {
               participant.audioTracks.forEach((publication) => {
@@ -832,7 +839,7 @@ import { Room } from 'livekit-client';
                 }
               });
             }
-            
+
             // Stop video tracks
             if (participant.videoTracks) {
               participant.videoTracks.forEach((publication) => {
@@ -845,7 +852,7 @@ import { Room } from 'livekit-client';
         } catch (e) {
           console.log('Error stopping tracks:', e);
         }
-        
+
         // Disconnect from room
         this['AG-room'].disconnect();
         this['AG-room'] = null;

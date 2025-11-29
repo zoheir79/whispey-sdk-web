@@ -1,8 +1,8 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
+import { LogLevel, setLogLevel } from 'livekit-client';
 import { LiveKitRoom, RoomAudioRenderer, StartAudio } from '@livekit/components-react';
 import { PopupView } from '@/components/embed-popup/popup-view';
-import { setLogLevel, LogLevel } from 'livekit-client';
 import '@/styles/globals.css';
 
 // Disable LiveKit logs
@@ -171,10 +171,10 @@ class AdexGenieWidget {
     try {
       // Call external API directly or through proxy
       const apiUrl = this.apiUrl || 'https://monvoice.adexgenie.ai/api/agent/generate-token';
-      
+
       // Use X-API-Key for Next.js proxy, X-Agent-API-Key for direct API calls
       const isProxy = apiUrl.includes('/api/proxy-token');
-      
+
       const response = await fetch(apiUrl, {
         method: 'POST',
         headers: {
@@ -192,7 +192,7 @@ class AdexGenieWidget {
       }
 
       const data = await response.json();
-      
+
       this.connectionDetails = {
         serverUrl: data.url || data.server_url || data.serverUrl,
         participantToken: data.token || data.participant_token || data.participantToken,
@@ -278,7 +278,7 @@ class AdexGenieWidget {
 
     // Mount React app
     this.reactRoot = ReactDOM.createRoot(reactMount);
-    
+
     // Only render if we have valid connection details
     if (this.connectionDetails.serverUrl && this.connectionDetails.participantToken) {
       this.reactRoot.render(

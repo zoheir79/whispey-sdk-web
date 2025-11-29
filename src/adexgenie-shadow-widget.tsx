@@ -1,9 +1,9 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
+import { LogLevel, setLogLevel } from 'livekit-client';
 import { LiveKitRoom, RoomAudioRenderer, StartAudio } from '@livekit/components-react';
-import { setLogLevel, LogLevel } from 'livekit-client';
-import { PopupView } from '../components/embed-popup/popup-view';
 import globalCss from '@/styles/globals.css';
+import { PopupView } from '../components/embed-popup/popup-view';
 
 // Disable LiveKit logs
 setLogLevel(LogLevel.silent);
@@ -285,7 +285,7 @@ class AdexGenieShadowWidget {
 
     // Create React root and render LiveKit
     this.reactRoot = ReactDOM.createRoot(reactMount);
-    
+
     this.reactRoot.render(
       <LiveKitRoom
         serverUrl={this.connectionDetails.serverUrl}

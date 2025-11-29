@@ -33,7 +33,7 @@ function getConfigFromScriptTag(): EmbedWidgetConfig {
 }
 
 export function getEmbedWidgetConfig(): EmbedWidgetConfig {
-  const globalConfig = typeof window !== 'undefined' ? window.AdexGenieEmbedConfig ?? {} : {};
+  const globalConfig = typeof window !== 'undefined' ? (window.AdexGenieEmbedConfig ?? {}) : {};
   const scriptConfig = getConfigFromScriptTag();
 
   return {

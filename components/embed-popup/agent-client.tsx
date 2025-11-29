@@ -9,7 +9,6 @@ import { PopupView } from '@/components/embed-popup/popup-view';
 import { Trigger } from '@/components/embed-popup/trigger';
 import { Button } from '@/components/ui/button';
 import { AgentProvider } from '@/contexts/agent-context';
-import { useAgentCapabilities } from '@/contexts/agent-context';
 import useConnectionDetails from '@/hooks/use-connection-details';
 import { type AppConfig, EmbedErrorDetails } from '@/lib/types';
 import { cn } from '@/lib/utils';

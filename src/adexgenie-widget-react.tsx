@@ -247,7 +247,7 @@ class AdexGenieWidget {
     if (!this.connectionDetails) {
       try {
         await this.fetchConnectionDetails();
-      } catch (_error) {
+      } catch {
         widgetContainer.innerHTML = `
           <div style="display: flex; align-items: center; justify-content: center; height: 100%; flex-direction: column; gap: 16px; padding: 24px;">
             <p style="color: #db1b06; font-size: 16px; font-weight: 600;">Erreur de connexion</p>

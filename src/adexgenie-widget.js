@@ -711,7 +711,7 @@ import { Room } from 'livekit-client';
         });
 
         // Écouter les transcriptions natives LiveKit
-        this['AG-room'].on('transcriptionReceived', (segments, participant, _publication) => {
+        this['AG-room'].on('transcriptionReceived', (segments, participant) => {
           console.log('Transcription received:', segments);
           segments.forEach((segment) => {
             if (segment.final && segment.text) {
@@ -724,7 +724,7 @@ import { Room } from 'livekit-client';
         });
 
         // Écouter les data messages (pour les agents qui envoient via data channel)
-        this['AG-room'].on('dataReceived', (payload, participant, _kind) => {
+        this['AG-room'].on('dataReceived', (payload, participant) => {
           try {
             const decoder = new TextDecoder();
             const text = decoder.decode(payload);
@@ -738,7 +738,7 @@ import { Room } from 'livekit-client';
                 participant?.identity === this['AG-connectionDetails'].agentName;
               this.addMessage(data.text || data.message, isAgent ? 'agent' : 'user');
             }
-          } catch (_e) {
+          } catch {
             console.log('Non-JSON data received');
           }
         });

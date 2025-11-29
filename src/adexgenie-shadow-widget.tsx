@@ -10,8 +10,8 @@ setLogLevel(LogLevel.silent);
 
 // Expose React globally for LiveKit components
 if (typeof window !== 'undefined') {
-  (window as any).React = React;
-  (window as any).ReactDOM = ReactDOM;
+  (window as unknown as { React: typeof React }).React = React;
+  (window as unknown as { ReactDOM: typeof ReactDOM }).ReactDOM = ReactDOM;
 }
 
 interface WidgetConfig {
@@ -31,7 +31,7 @@ class AdexGenieShadowWidget {
   private apiKey: string;
   private shadowHost: HTMLDivElement | null = null;
   private shadowRoot: ShadowRoot | null = null;
-  private reactRoot: any = null;
+  private reactRoot: ReturnType<typeof ReactDOM.createRoot> | null = null;
   private connectionDetails: ConnectionDetails | null = null;
   private isOpen: boolean = false;
   private fab: HTMLButtonElement | null = null;
@@ -339,6 +339,8 @@ class AdexGenieShadowWidget {
 }
 
 // Expose globally
-(window as any).AdexGenieShadowWidget = AdexGenieShadowWidget;
+(
+  window as unknown as { AdexGenieShadowWidget: typeof AdexGenieShadowWidget }
+).AdexGenieShadowWidget = AdexGenieShadowWidget;
 
 export default AdexGenieShadowWidget;

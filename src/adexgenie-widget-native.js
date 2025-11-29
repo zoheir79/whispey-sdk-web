@@ -240,7 +240,7 @@ class AdexGenieWidget {
       this.addTranscript(transcriptsDiv, 'system', 'Disconnected');
     });
 
-    this.room.on(RoomEvent.TrackSubscribed, (track, publication, participant) => {
+    this.room.on(RoomEvent.TrackSubscribed, (track, _publication, _participant) => {
       if (track.kind === Track.Kind.Audio) {
         const audioElement = track.attach();
         container.appendChild(audioElement);
@@ -255,7 +255,7 @@ class AdexGenieWidget {
           const isUser = participant?.identity === this.room.localParticipant.identity;
           this.addTranscript(transcriptsDiv, isUser ? 'user' : 'assistant', data.text);
         }
-      } catch (e) {
+      } catch (_e) {
         // Not a transcription message
       }
     });

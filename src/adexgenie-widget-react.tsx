@@ -10,8 +10,8 @@ setLogLevel(LogLevel.silent);
 
 // Expose React globally for LiveKit components
 if (typeof window !== 'undefined') {
-  (window as any).React = React;
-  (window as any).ReactDOM = ReactDOM;
+  (window as unknown as { React: typeof React }).React = React;
+  (window as unknown as { ReactDOM: typeof ReactDOM }).ReactDOM = ReactDOM;
 }
 
 interface ConnectionDetails {
@@ -28,7 +28,7 @@ class AdexGenieWidget {
   private apiUrl: string;
   private agentId: string;
   private apiKey: string;
-  private reactRoot: any = null;
+  private reactRoot: ReturnType<typeof ReactDOM.createRoot> | null = null;
   private fab: HTMLButtonElement | null = null;
 
   constructor(config: { apiUrl: string; agentId: string; apiKey: string }) {
@@ -247,7 +247,7 @@ class AdexGenieWidget {
     if (!this.connectionDetails) {
       try {
         await this.fetchConnectionDetails();
-      } catch (error) {
+      } catch (_error) {
         widgetContainer.innerHTML = `
           <div style="display: flex; align-items: center; justify-content: center; height: 100%; flex-direction: column; gap: 16px; padding: 24px;">
             <p style="color: #db1b06; font-size: 16px; font-weight: 600;">Erreur de connexion</p>
@@ -344,5 +344,6 @@ export default AdexGenieWidget;
 
 // Auto-initialize if config is present
 if (typeof window !== 'undefined') {
-  (window as any).AdexGenieWidget = AdexGenieWidget;
+  (window as unknown as { AdexGenieWidget: typeof AdexGenieWidget }).AdexGenieWidget =
+    AdexGenieWidget;
 }

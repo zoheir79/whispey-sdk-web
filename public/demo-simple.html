@@ -1,0 +1,411 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AdexGenie Widget - Configuration Simplifiée</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 40px 20px;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        .header {
+            text-align: center;
+            color: white;
+            margin-bottom: 40px;
+        }
+
+        .header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 15px;
+            text-shadow: 0 2px 10px rgba(0,0,0,0.2);
+        }
+
+        .header p {
+            font-size: 1.1rem;
+            opacity: 0.9;
+        }
+
+        .card {
+            background: white;
+            border-radius: 16px;
+            padding: 30px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            margin-bottom: 25px;
+        }
+
+        .card h2 {
+            color: #1e3a8a;
+            margin-bottom: 15px;
+            font-size: 1.5rem;
+        }
+
+        .card p {
+            color: #64748b;
+            line-height: 1.6;
+            margin-bottom: 15px;
+        }
+
+        .code-block {
+            background: #1e1e1e;
+            color: #d4d4d4;
+            padding: 20px;
+            border-radius: 12px;
+            overflow-x: auto;
+            margin: 15px 0;
+            font-family: 'Courier New', monospace;
+            font-size: 14px;
+        }
+
+        .highlight {
+            color: #4ec9b0;
+        }
+
+        .string {
+            color: #ce9178;
+        }
+
+        .keyword {
+            color: #569cd6;
+        }
+
+        .comment {
+            color: #6a9955;
+        }
+
+        .config-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+        }
+
+        .config-table th,
+        .config-table td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #e5e7eb;
+        }
+
+        .config-table th {
+            background: #f8f9fa;
+            color: #1e3a8a;
+            font-weight: 600;
+        }
+
+        .config-table code {
+            background: #f1f5f9;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-size: 0.9em;
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 4px 10px;
+            background: #10b981;
+            color: white;
+            border-radius: 12px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            margin-left: 8px;
+        }
+
+        .badge.required {
+            background: #ef4444;
+        }
+
+        .flow-diagram {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 12px;
+            margin: 20px 0;
+        }
+
+        .flow-step {
+            display: flex;
+            align-items: center;
+            margin: 10px 0;
+            padding: 10px;
+            background: white;
+            border-radius: 8px;
+            border-left: 4px solid #667eea;
+        }
+
+        .flow-step-number {
+            background: #667eea;
+            color: white;
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            margin-right: 15px;
+            flex-shrink: 0;
+        }
+
+        .flow-step-text {
+            color: #1e3a8a;
+            font-size: 0.95rem;
+        }
+
+        .footer {
+            text-align: center;
+            color: white;
+            margin-top: 40px;
+            opacity: 0.8;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🎯 AdexGenie Widget</h1>
+            <p>Configuration Simplifiée - Tout dans le HTML !</p>
+        </div>
+
+        <div class="card">
+            <h2>✨ Interface Professionnelle Moderne</h2>
+            <p>Design inspiré de LiveKit avec les couleurs de votre marque AdexGenie.</p>
+
+            <div class="flow-diagram">
+                <div class="flow-step">
+                    <div class="flow-step-number">1</div>
+                    <div class="flow-step-text">
+                        <strong>Barre de Statut</strong> - Gradient bleu avec visualiseur audio animé
+                    </div>
+                </div>
+                <div class="flow-step">
+                    <div class="flow-step-number">2</div>
+                    <div class="flow-step-text">
+                        <strong>Chat Moderne</strong> - Bulles de messages avec timestamps
+                    </div>
+                </div>
+                <div class="flow-step">
+                    <div class="flow-step-number">3</div>
+                    <div class="flow-step-text">
+                        <strong>Contrôles Élégants</strong> - Boutons avec animations et micro-interactions
+                    </div>
+                </div>
+                <div class="flow-step">
+                    <div class="flow-step-number">4</div>
+                    <div class="flow-step-text">
+                        <strong>100% Personnalisable</strong> - Toutes les couleurs modifiables via config
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="card">
+            <h2>📝 Configuration Requise</h2>
+            <table class="config-table">
+                <thead>
+                    <tr>
+                        <th>Paramètre</th>
+                        <th>Description</th>
+                        <th>Exemple</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><code>agentId</code> <span class="badge required">REQUIS</span></td>
+                        <td>UUID de votre agent</td>
+                        <td><code>abc-123-def-456</code></td>
+                    </tr>
+                    <tr>
+                        <td><code>apiUrl</code> <span class="badge required">REQUIS</span></td>
+                        <td>URL de votre API pour générer le JWT</td>
+                        <td><code>https://api.example.com/jwt</code></td>
+                    </tr>
+                    <tr>
+                        <td><code>apiKey</code> <span class="badge required">REQUIS</span></td>
+                        <td>Clé API publique (envoyée dans le header)</td>
+                        <td><code>pk_live_abc123...</code></td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <div class="card">
+            <h2>💻 Code d'Intégration</h2>
+            <p>Copiez-collez ce code dans votre page HTML :</p>
+
+            <div class="code-block"><span class="comment">&lt;!-- Charger le widget --&gt;</span>
+<span class="keyword">&lt;script</span> <span class="highlight">src</span>=<span class="string">"adexgenie-widget.min.js"</span><span class="keyword">&gt;&lt;/script&gt;</span>
+
+<span class="comment">&lt;!-- Initialiser avec votre configuration --&gt;</span>
+<span class="keyword">&lt;script&gt;</span>
+    <span class="highlight">AdexGenie</span>.<span class="highlight">init</span>({
+        <span class="comment">// UUID de votre agent</span>
+        <span class="highlight">agentId</span>: <span class="string">'abc-123-def-456'</span>,
+        
+        <span class="comment">// URL de votre API qui génère le JWT</span>
+        <span class="highlight">apiUrl</span>: <span class="string">'https://api.example.com/generate-jwt'</span>,
+        
+        <span class="comment">// Clé API publique</span>
+        <span class="highlight">apiKey</span>: <span class="string">'pk_live_abc123xyz'</span>
+    });
+<span class="keyword">&lt;/script&gt;</span></div>
+        </div>
+
+        <div class="card">
+            <h2>🔧 Format de Réponse API</h2>
+            <p>Votre API doit retourner un JSON avec ce format :</p>
+
+            <div class="code-block"><span class="comment">// Requête envoyée par le widget</span>
+<span class="keyword">POST</span> https://api.example.com/generate-jwt
+<span class="keyword">Headers:</span>
+  Content-Type: application/json
+  X-API-Key: pk_live_abc123xyz
+<span class="keyword">Body:</span>
+{
+  <span class="string">"agent_id"</span>: <span class="string">"abc-123-def-456"</span>
+}
+
+<span class="comment">// Réponse attendue de votre API</span>
+{
+  <span class="string">"token"</span>: <span class="string">"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."</span>,
+  <span class="string">"serverUrl"</span>: <span class="string">"wss://orch.adexgenie.ai"</span>,  <span class="comment">// URL du serveur LiveKit</span>
+  <span class="string">"roomName"</span>: <span class="string">"agent_room_abc123"</span>,
+  <span class="string">"agentName"</span>: <span class="string">"Mon Agent IA"</span>,  <span class="comment">// Nom de l'agent</span>
+  <span class="string">"participantName"</span>: <span class="string">"user"</span>,  <span class="comment">// optionnel</span>
+  <span class="string">"metadata"</span>: {}  <span class="comment">// optionnel</span>
+}</div>
+        </div>
+
+        <div class="card">
+            <h2>🎨 Personnalisation des Couleurs</h2>
+            <p>Toutes les couleurs sont personnalisables via la configuration :</p>
+            
+            <table class="config-table">
+                <thead>
+                    <tr>
+                        <th>Variable</th>
+                        <th>Défaut</th>
+                        <th>Usage</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><code>primaryColor</code></td>
+                        <td><code>#00A7E1</code></td>
+                        <td>Couleur principale (boutons, liens)</td>
+                    </tr>
+                    <tr>
+                        <td><code>secondaryColor</code></td>
+                        <td><code>#0066A1</code></td>
+                        <td>Couleur secondaire (header gradient)</td>
+                    </tr>
+                    <tr>
+                        <td><code>accentColor</code></td>
+                        <td><code>#00D4FF</code></td>
+                        <td>Couleur d'accent (visualiseur audio)</td>
+                    </tr>
+                    <tr>
+                        <td><code>successColor</code></td>
+                        <td><code>#10b981</code></td>
+                        <td>Indicateurs de succès</td>
+                    </tr>
+                    <tr>
+                        <td><code>dangerColor</code></td>
+                        <td><code>#dc2626</code></td>
+                        <td>Bouton de fin d'appel</td>
+                    </tr>
+                    <tr>
+                        <td><code>backgroundColor</code></td>
+                        <td><code>#f8f9fa</code></td>
+                        <td>Fond de l'interface</td>
+                    </tr>
+                    <tr>
+                        <td><code>surfaceColor</code></td>
+                        <td><code>#ffffff</code></td>
+                        <td>Cartes et surfaces</td>
+                    </tr>
+                    <tr>
+                        <td><code>textColor</code></td>
+                        <td><code>#1f2937</code></td>
+                        <td>Texte principal</td>
+                    </tr>
+                    <tr>
+                        <td><code>textLightColor</code></td>
+                        <td><code>#6b7280</code></td>
+                        <td>Texte secondaire</td>
+                    </tr>
+                    <tr>
+                        <td><code>borderColor</code></td>
+                        <td><code>#e5e7eb</code></td>
+                        <td>Bordures et séparateurs</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <div class="card">
+            <h2>🌟 Fonctionnalités UI</h2>
+            <ul style="list-style: none; padding: 0;">
+                <li style="padding: 10px 0; border-bottom: 1px solid #e5e7eb;">
+                    ✅ <strong>Barre de Statut Élégante</strong> - Gradient bleu avec visualiseur audio animé
+                </li>
+                <li style="padding: 10px 0; border-bottom: 1px solid #e5e7eb;">
+                    ✅ <strong>Bulles de Messages</strong> - Design moderne avec timestamps
+                </li>
+                <li style="padding: 10px 0; border-bottom: 1px solid #e5e7eb;">
+                    ✅ <strong>Animations Fluides</strong> - Micro-interactions et transitions
+                </li>
+                <li style="padding: 10px 0; border-bottom: 1px solid #e5e7eb;">
+                    ✅ <strong>Gradients Modernes</strong> - Couleurs de marque AdexGenie
+                </li>
+                <li style="padding: 10px 0; border-bottom: 1px solid #e5e7eb;">
+                    ✅ <strong>Responsive</strong> - S'adapte à tous les écrans
+                </li>
+                <li style="padding: 10px 0;">
+                    ✅ <strong>100% Personnalisable</strong> - Toutes les couleurs modifiables
+                </li>
+            </ul>
+        </div>
+
+        <div class="footer">
+            <p>© 2024 AdexGenie - Widget d'Agent IA</p>
+        </div>
+    </div>
+
+    <!-- Exemple d'intégration du widget -->
+    <script src="adexgenie-widget.min.js"></script>
+    <script>
+        // CONFIGURATION DE DEMO
+        // Remplacez ces valeurs par les vôtres
+        AdexGenie.init({
+            agentId: 'demo-agent-123',
+            apiUrl: 'https://your-api.com/generate-jwt',
+            apiKey: 'pk_demo_key',
+            
+            // Personnalisation des couleurs (optionnel)
+            primaryColor: '#00A7E1',      // Bleu cyan principal
+            secondaryColor: '#0066A1',    // Bleu foncé
+            accentColor: '#00D4FF',       // Cyan clair
+            successColor: '#10b981',      // Vert
+            dangerColor: '#dc2626',       // Rouge
+            backgroundColor: '#f8f9fa',   // Fond clair
+            surfaceColor: '#ffffff',      // Surface blanche
+            textColor: '#1f2937',         // Texte sombre
+            textLightColor: '#6b7280',    // Texte gris
+            borderColor: '#e5e7eb'        // Bordures
+        });
+    </script>
+</body>
+</html>

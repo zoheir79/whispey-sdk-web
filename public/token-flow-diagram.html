@@ -1,0 +1,545 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>JWT Token Flow - Diagramme Interactif</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 40px 20px;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        h1 {
+            text-align: center;
+            color: white;
+            margin-bottom: 40px;
+            font-size: 2.5rem;
+            text-shadow: 0 2px 10px rgba(0,0,0,0.2);
+        }
+
+        .flow-container {
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            margin-bottom: 30px;
+        }
+
+        .step {
+            display: flex;
+            align-items: center;
+            margin: 30px 0;
+            padding: 20px;
+            background: #f8f9fa;
+            border-radius: 12px;
+            border-left: 4px solid #667eea;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .step:hover {
+            transform: translateX(10px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+
+        .step.active {
+            background: #e7f3ff;
+            border-left-color: #0066cc;
+        }
+
+        .step-number {
+            width: 50px;
+            height: 50px;
+            background: #667eea;
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            font-weight: bold;
+            margin-right: 20px;
+            flex-shrink: 0;
+        }
+
+        .step.active .step-number {
+            background: #0066cc;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+        }
+
+        .step-content {
+            flex: 1;
+        }
+
+        .step-title {
+            font-size: 20px;
+            font-weight: 600;
+            color: #1e3a8a;
+            margin-bottom: 8px;
+        }
+
+        .step-description {
+            color: #64748b;
+            line-height: 1.6;
+        }
+
+        .arrow {
+            text-align: center;
+            color: #667eea;
+            font-size: 30px;
+            margin: 10px 0;
+        }
+
+        .code-section {
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            margin-bottom: 30px;
+        }
+
+        .code-title {
+            font-size: 24px;
+            color: #1e3a8a;
+            margin-bottom: 20px;
+            font-weight: 600;
+        }
+
+        .code-block {
+            background: #1e1e1e;
+            color: #d4d4d4;
+            padding: 20px;
+            border-radius: 12px;
+            overflow-x: auto;
+            font-family: 'Courier New', monospace;
+            font-size: 14px;
+            line-height: 1.6;
+        }
+
+        .code-comment {
+            color: #6a9955;
+        }
+
+        .code-keyword {
+            color: #569cd6;
+        }
+
+        .code-string {
+            color: #ce9178;
+        }
+
+        .code-function {
+            color: #dcdcaa;
+        }
+
+        .code-variable {
+            color: #9cdcfe;
+        }
+
+        .controls {
+            text-align: center;
+            margin: 30px 0;
+        }
+
+        .btn {
+            background: #667eea;
+            color: white;
+            border: none;
+            padding: 12px 30px;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            margin: 0 10px;
+            transition: all 0.3s ease;
+        }
+
+        .btn:hover {
+            background: #5568d3;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn.secondary {
+            background: #64748b;
+        }
+
+        .btn.secondary:hover {
+            background: #475569;
+        }
+
+        .info-box {
+            background: #fff3cd;
+            border: 2px solid #ffc107;
+            border-radius: 12px;
+            padding: 20px;
+            margin: 20px 0;
+        }
+
+        .info-box h3 {
+            color: #856404;
+            margin-bottom: 10px;
+        }
+
+        .info-box p {
+            color: #856404;
+            line-height: 1.6;
+        }
+
+        .token-example {
+            background: #e7f3ff;
+            border: 2px solid #0066cc;
+            border-radius: 12px;
+            padding: 20px;
+            margin: 20px 0;
+        }
+
+        .token-example h3 {
+            color: #0066cc;
+            margin-bottom: 10px;
+        }
+
+        .token-part {
+            margin: 10px 0;
+            padding: 10px;
+            background: white;
+            border-radius: 8px;
+        }
+
+        .token-part-title {
+            font-weight: 600;
+            color: #1e3a8a;
+            margin-bottom: 5px;
+        }
+
+        .token-part-content {
+            font-family: 'Courier New', monospace;
+            font-size: 12px;
+            color: #64748b;
+            word-break: break-all;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🔐 Flux de Récupération du JWT Token</h1>
+
+        <div class="controls">
+            <button class="btn" onclick="startAnimation()">▶️ Démarrer l'Animation</button>
+            <button class="btn secondary" onclick="resetAnimation()">🔄 Réinitialiser</button>
+        </div>
+
+        <div class="flow-container">
+            <div class="step" data-step="1">
+                <div class="step-number">1</div>
+                <div class="step-content">
+                    <div class="step-title">Utilisateur Clique sur "Start Call"</div>
+                    <div class="step-description">
+                        L'utilisateur clique sur le bouton "Start Call" dans le widget (mode Popup ou Inline).
+                        Le widget détecte qu'il n'a pas encore de token de connexion.
+                    </div>
+                </div>
+            </div>
+
+            <div class="arrow">↓</div>
+
+            <div class="step" data-step="2">
+                <div class="step-number">2</div>
+                <div class="step-content">
+                    <div class="step-title">Widget Appelle l'API</div>
+                    <div class="step-description">
+                        Le widget effectue un appel HTTP GET vers <code>/api/connection-details</code>.
+                        L'endpoint est configurable via <code>apiEndpoint</code> dans la configuration du widget.
+                    </div>
+                </div>
+            </div>
+
+            <div class="arrow">↓</div>
+
+            <div class="step" data-step="3">
+                <div class="step-number">3</div>
+                <div class="step-content">
+                    <div class="step-title">API Vérifie les Variables d'Environnement</div>
+                    <div class="step-description">
+                        L'API Next.js vérifie que <code>LIVEKIT_API_KEY</code>, <code>LIVEKIT_API_SECRET</code> 
+                        et <code>LIVEKIT_URL</code> sont définis dans <code>.env.local</code>.
+                    </div>
+                </div>
+            </div>
+
+            <div class="arrow">↓</div>
+
+            <div class="step" data-step="4">
+                <div class="step-number">4</div>
+                <div class="step-content">
+                    <div class="step-title">Génération d'Identifiants Uniques</div>
+                    <div class="step-description">
+                        L'API génère un nom de room aléatoire et une identité unique pour le participant.
+                        Exemple : <code>voice_assistant_room_5933</code> et <code>voice_assistant_user_5933</code>
+                    </div>
+                </div>
+            </div>
+
+            <div class="arrow">↓</div>
+
+            <div class="step" data-step="5">
+                <div class="step-number">5</div>
+                <div class="step-content">
+                    <div class="step-title">Création du JWT Token</div>
+                    <div class="step-description">
+                        L'API utilise le SDK LiveKit pour créer un JWT token signé avec <code>API_SECRET</code>.
+                        Le token contient les permissions (grants) et les métadonnées du participant.
+                        Durée de validité : 15 minutes par défaut.
+                    </div>
+                </div>
+            </div>
+
+            <div class="arrow">↓</div>
+
+            <div class="step" data-step="6">
+                <div class="step-number">6</div>
+                <div class="step-content">
+                    <div class="step-title">Retour des Détails de Connexion</div>
+                    <div class="step-description">
+                        L'API retourne un JSON contenant : <code>serverUrl</code>, <code>roomName</code>, 
+                        <code>participantToken</code> (le JWT), et <code>participantName</code>.
+                    </div>
+                </div>
+            </div>
+
+            <div class="arrow">↓</div>
+
+            <div class="step" data-step="7">
+                <div class="step-number">7</div>
+                <div class="step-content">
+                    <div class="step-title">Widget Stocke les Détails</div>
+                    <div class="step-description">
+                        Le widget stocke les détails de connexion dans <code>this.connectionDetails</code>.
+                        Ces informations seront utilisées pour établir la connexion WebSocket.
+                    </div>
+                </div>
+            </div>
+
+            <div class="arrow">↓</div>
+
+            <div class="step" data-step="8">
+                <div class="step-number">8</div>
+                <div class="step-content">
+                    <div class="step-title">Connexion à LiveKit</div>
+                    <div class="step-description">
+                        Le widget utilise le SDK LiveKit Client pour se connecter au serveur LiveKit
+                        en utilisant <code>serverUrl</code> et <code>participantToken</code>.
+                    </div>
+                </div>
+            </div>
+
+            <div class="arrow">↓</div>
+
+            <div class="step" data-step="9">
+                <div class="step-number">9</div>
+                <div class="step-content">
+                    <div class="step-title">LiveKit Valide le Token</div>
+                    <div class="step-description">
+                        Le serveur LiveKit vérifie la signature du JWT token en utilisant <code>API_KEY</code>.
+                        Si le token est valide, la connexion est établie.
+                    </div>
+                </div>
+            </div>
+
+            <div class="arrow">↓</div>
+
+            <div class="step" data-step="10">
+                <div class="step-number">10</div>
+                <div class="step-content">
+                    <div class="step-title">Activation du Microphone</div>
+                    <div class="step-description">
+                        Une fois connecté, le widget active le microphone du participant.
+                        L'utilisateur peut maintenant parler avec l'agent IA.
+                    </div>
+                </div>
+            </div>
+
+            <div class="arrow">✅</div>
+
+            <div class="step" data-step="11">
+                <div class="step-number">✓</div>
+                <div class="step-content">
+                    <div class="step-title">Session Active</div>
+                    <div class="step-description">
+                        La session est maintenant active. L'utilisateur peut communiquer avec l'agent.
+                        Le token reste valide pendant 15 minutes.
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="code-section">
+            <div class="code-title">📝 Code : Récupération du Token (Widget)</div>
+            <div class="code-block">
+<span class="code-comment">// Dans livekit-agent-widget.js</span>
+<span class="code-keyword">async</span> <span class="code-function">fetchConnectionDetails</span>() {
+  <span class="code-keyword">try</span> {
+    <span class="code-comment">// Construction de l'URL de l'endpoint</span>
+    <span class="code-keyword">const</span> <span class="code-variable">endpoint</span> = <span class="code-keyword">this</span>.config.apiEndpoint.startsWith(<span class="code-string">'http'</span>) 
+      ? <span class="code-keyword">this</span>.config.apiEndpoint 
+      : <span class="code-string">`${window.location.origin}${<span class="code-keyword">this</span>.config.apiEndpoint}`</span>;
+    
+    <span class="code-comment">// Appel HTTP GET</span>
+    <span class="code-keyword">const</span> <span class="code-variable">response</span> = <span class="code-keyword">await</span> <span class="code-function">fetch</span>(endpoint);
+    
+    <span class="code-keyword">if</span> (!response.ok) {
+      <span class="code-keyword">throw new</span> <span class="code-function">Error</span>(<span class="code-string">`Server returned ${response.status}`</span>);
+    }
+    
+    <span class="code-comment">// Stockage des détails (contient le JWT token)</span>
+    <span class="code-keyword">this</span>.connectionDetails = <span class="code-keyword">await</span> response.<span class="code-function">json</span>();
+    
+  } <span class="code-keyword">catch</span> (error) {
+    console.<span class="code-function">error</span>(<span class="code-string">'Error fetching connection details:'</span>, error);
+  }
+}
+            </div>
+        </div>
+
+        <div class="code-section">
+            <div class="code-title">🔐 Code : Génération du Token (API)</div>
+            <div class="code-block">
+<span class="code-comment">// Dans app/api/connection-details/route.ts</span>
+<span class="code-keyword">function</span> <span class="code-function">createParticipantToken</span>(userInfo, roomName) {
+  <span class="code-comment">// 1. Création de l'AccessToken avec les clés API</span>
+  <span class="code-keyword">const</span> <span class="code-variable">at</span> = <span class="code-keyword">new</span> <span class="code-function">AccessToken</span>(
+    API_KEY,      <span class="code-comment">// Depuis .env.local</span>
+    API_SECRET,   <span class="code-comment">// Depuis .env.local</span>
+    {
+      ...userInfo,
+      ttl: <span class="code-string">'15m'</span>,  <span class="code-comment">// Token valide 15 minutes</span>
+    }
+  );
+  
+  <span class="code-comment">// 2. Définition des permissions</span>
+  <span class="code-keyword">const</span> <span class="code-variable">grant</span> = {
+    room: roomName,
+    roomJoin: <span class="code-keyword">true</span>,
+    canPublish: <span class="code-keyword">true</span>,
+    canPublishData: <span class="code-keyword">true</span>,
+    canSubscribe: <span class="code-keyword">true</span>,
+  };
+  
+  <span class="code-comment">// 3. Ajout des métadonnées</span>
+  at.metadata = JSON.<span class="code-function">stringify</span>({
+    agentName: <span class="code-string">"testvoice"</span>,
+  });
+  
+  <span class="code-comment">// 4. Ajout des permissions</span>
+  at.<span class="code-function">addGrant</span>(grant);
+  
+  <span class="code-comment">// 5. Conversion en JWT</span>
+  <span class="code-keyword">return</span> at.<span class="code-function">toJwt</span>();
+}
+            </div>
+        </div>
+
+        <div class="token-example">
+            <h3>🎫 Exemple de JWT Token</h3>
+            <div class="token-part">
+                <div class="token-part-title">Header (En-tête)</div>
+                <div class="token-part-content">eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9</div>
+                <div style="margin-top: 10px; color: #64748b;">
+                    Décodé : <code>{"alg":"HS256","typ":"JWT"}</code>
+                </div>
+            </div>
+            <div class="token-part">
+                <div class="token-part-title">Payload (Données)</div>
+                <div class="token-part-content">eyJuYW1lIjoidXNlciIsIm1ldGFkYXRhIjoie1wiYWdlbnROYW1lXCI6XCJ0ZXN0dm9pY2VcIn0iLCJ2aWRlbyI6eyJyb29tIjoidm9pY2VfYXNzaXN0YW50X3Jvb21fNTkzMyIsInJvb21Kb2luIjp0cnVlLCJjYW5QdWJsaXNoIjp0cnVlLCJjYW5QdWJsaXNoRGF0YSI6dHJ1ZSwiY2FuU3Vic2NyaWJlIjp0cnVlfSwiaWF0IjoxNzAwNzAwMDAwLCJleHAiOjE3MDA3MDA5MDAsImlzcyI6IkFQSUFWa3dVd1FQWVJmNCIsInN1YiI6InZvaWNlX2Fzc2lzdGFudF91c2VyXzU5MzMifQ</div>
+                <div style="margin-top: 10px; color: #64748b;">
+                    Contient : permissions, identité, expiration, métadonnées
+                </div>
+            </div>
+            <div class="token-part">
+                <div class="token-part-title">Signature</div>
+                <div class="token-part-content">HMACSHA256(header + payload, API_SECRET)</div>
+                <div style="margin-top: 10px; color: #64748b;">
+                    Garantit l'authenticité et l'intégrité du token
+                </div>
+            </div>
+        </div>
+
+        <div class="info-box">
+            <h3>🔒 Pourquoi C'est Sécurisé ?</h3>
+            <p>
+                <strong>1. Les clés API ne quittent jamais le serveur</strong> - Elles sont stockées dans <code>.env.local</code> 
+                et utilisées uniquement côté serveur.<br><br>
+                <strong>2. Le token a une durée de vie limitée</strong> - 15 minutes par défaut, après quoi il expire.<br><br>
+                <strong>3. Le token est signé</strong> - LiveKit peut vérifier qu'il n'a pas été modifié.<br><br>
+                <strong>4. Permissions granulaires</strong> - Chaque token spécifie exactement ce que le participant peut faire.
+            </p>
+        </div>
+    </div>
+
+    <script>
+        let currentStep = 0;
+        let animationInterval = null;
+
+        function startAnimation() {
+            resetAnimation();
+            currentStep = 1;
+            animationInterval = setInterval(() => {
+                if (currentStep <= 11) {
+                    highlightStep(currentStep);
+                    currentStep++;
+                } else {
+                    clearInterval(animationInterval);
+                }
+            }, 1500);
+        }
+
+        function resetAnimation() {
+            if (animationInterval) {
+                clearInterval(animationInterval);
+            }
+            currentStep = 0;
+            document.querySelectorAll('.step').forEach(step => {
+                step.classList.remove('active');
+            });
+        }
+
+        function highlightStep(stepNumber) {
+            document.querySelectorAll('.step').forEach(step => {
+                step.classList.remove('active');
+            });
+            const step = document.querySelector(`.step[data-step="${stepNumber}"]`);
+            if (step) {
+                step.classList.add('active');
+                step.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            }
+        }
+
+        // Click on step to highlight
+        document.querySelectorAll('.step').forEach(step => {
+            step.addEventListener('click', function() {
+                document.querySelectorAll('.step').forEach(s => s.classList.remove('active'));
+                this.classList.add('active');
+            });
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LiveKit Agent Widget - Demo</title>
+    <style>
+        /* Page styles - completely independent from widget */
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .demo-container {
+            max-width: 800px;
+            padding: 40px;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+        }
+
+        h1 {
+            color: #333;
+            margin-bottom: 10px;
+        }
+
+        .subtitle {
+            color: #666;
+            margin-bottom: 30px;
+        }
+
+        .info-box {
+            background: #f0f4ff;
+            border-left: 4px solid #002cf2;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 30px;
+        }
+
+        .info-box h2 {
+            margin-top: 0;
+            color: #002cf2;
+            font-size: 18px;
+        }
+
+        .info-box p {
+            margin: 10px 0;
+            color: #555;
+            line-height: 1.6;
+        }
+
+        .info-box ul {
+            margin: 10px 0;
+            padding-left: 20px;
+        }
+
+        .info-box li {
+            margin: 8px 0;
+            color: #555;
+        }
+
+        code {
+            background: #e8eaf6;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-family: 'Courier New', monospace;
+            font-size: 14px;
+        }
+
+        .code-block {
+            background: #1e1e1e;
+            color: #d4d4d4;
+            padding: 20px;
+            border-radius: 8px;
+            overflow-x: auto;
+            margin: 20px 0;
+        }
+
+        .code-block pre {
+            margin: 0;
+            font-family: 'Courier New', monospace;
+            font-size: 14px;
+            line-height: 1.5;
+        }
+
+        .highlight {
+            color: #4ec9b0;
+        }
+
+        .string {
+            color: #ce9178;
+        }
+
+        .keyword {
+            color: #569cd6;
+        }
+
+        .feature-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin: 30px 0;
+        }
+
+        .feature-card {
+            background: #f9fafb;
+            padding: 20px;
+            border-radius: 12px;
+            text-align: center;
+            border: 2px solid #e5e7eb;
+        }
+
+        .feature-card .icon {
+            font-size: 40px;
+            margin-bottom: 10px;
+        }
+
+        .feature-card h3 {
+            margin: 10px 0;
+            color: #333;
+            font-size: 16px;
+        }
+
+        .feature-card p {
+            color: #666;
+            font-size: 14px;
+            margin: 0;
+        }
+
+        .note {
+            background: #fff3cd;
+            border: 1px solid #ffc107;
+            padding: 15px;
+            border-radius: 8px;
+            margin: 20px 0;
+        }
+
+        .note strong {
+            color: #856404;
+        }
+    </style>
+</head>
+<body>
+    <div class="demo-container">
+        <h1>🚀 LiveKit Agent Widget</h1>
+        <p class="subtitle">Standalone integration for any website</p>
+
+        <div class="info-box">
+            <h2>✨ How to Use</h2>
+            <p>This widget is now active on this page! Look for the floating buttons in the bottom-right corner:</p>
+            <ul>
+                <li><strong>💬 Popup Button</strong> - Opens a full popup chat interface</li>
+                <li><strong>🎯 Inline Button</strong> - Opens a compact inline chat bar</li>
+            </ul>
+        </div>
+
+        <div class="feature-grid">
+            <div class="feature-card">
+                <div class="icon">🔒</div>
+                <h3>Isolated</h3>
+                <p>Shadow DOM ensures no CSS/JS conflicts</p>
+            </div>
+            <div class="feature-card">
+                <div class="icon">⚡</div>
+                <h3>Lightweight</h3>
+                <p>Single file, no dependencies</p>
+            </div>
+            <div class="feature-card">
+                <div class="icon">🎨</div>
+                <h3>Customizable</h3>
+                <p>Easy configuration via JS</p>
+            </div>
+            <div class="feature-card">
+                <div class="icon">📱</div>
+                <h3>Responsive</h3>
+                <p>Works on all devices</p>
+            </div>
+        </div>
+
+        <div class="info-box">
+            <h2>📝 Integration Code</h2>
+            <p>Add these two lines to any HTML page:</p>
+        </div>
+
+        <div class="code-block">
+            <pre><span class="keyword">&lt;!-- Load the widget --&gt;</span>
+<span class="keyword">&lt;script</span> <span class="highlight">src</span>=<span class="string">"livekit-agent-widget.js"</span><span class="keyword">&gt;&lt;/script&gt;</span>
+
+<span class="keyword">&lt;!-- Initialize with your agent name --&gt;</span>
+<span class="keyword">&lt;script&gt;</span>
+  <span class="highlight">LiveKitAgentWidget</span>.<span class="highlight">init</span>({
+    <span class="highlight">agentName</span>: <span class="string">'My AI Assistant'</span>,
+    <span class="highlight">apiEndpoint</span>: <span class="string">'/api/connection-details'</span> <span class="keyword">// optional</span>
+  });
+<span class="keyword">&lt;/script&gt;</span></pre>
+        </div>
+
+        <div class="note">
+            <strong>Note:</strong> The widget automatically loads the LiveKit SDK from CDN. No additional dependencies required!
+        </div>
+
+        <div class="info-box">
+            <h2>⚙️ Configuration Options</h2>
+            <ul>
+                <li><code>agentName</code> - Display name for your agent (required)</li>
+                <li><code>apiEndpoint</code> - API endpoint for connection details (default: '/api/connection-details')</li>
+                <li><code>primaryColor</code> - Primary theme color (default: '#002cf2')</li>
+                <li><code>darkPrimaryColor</code> - Dark mode primary color (default: '#1fd5f9')</li>
+            </ul>
+        </div>
+
+        <div class="info-box">
+            <h2>🎯 Features</h2>
+            <ul>
+                <li>✅ Two interaction modes: Popup and Inline</li>
+                <li>✅ Complete CSS/JS isolation using Shadow DOM</li>
+                <li>✅ Automatic dark mode support</li>
+                <li>✅ Mobile responsive design</li>
+                <li>✅ Real-time voice communication</li>
+                <li>✅ Error handling and reconnection</li>
+                <li>✅ No conflicts with existing page styles or scripts</li>
+            </ul>
+        </div>
+    </div>
+
+    <!-- Widget Integration - Just these 2 script tags! -->
+    <script src="livekit-agent-widget.js"></script>
+    <script>
+        LiveKitAgentWidget.init({
+            agentName: 'Demo AI Agent',
+            apiEndpoint: '/api/connection-details'
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,383 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Exemples d'Intégration - Widget LiveKit</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #1e3a8a 0%, #3b82f6 100%);
+            min-height: 100vh;
+            padding: 40px 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .header {
+            text-align: center;
+            color: white;
+            margin-bottom: 40px;
+        }
+
+        .header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+        }
+
+        .header p {
+            font-size: 1.2rem;
+            opacity: 0.9;
+        }
+
+        .examples-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 30px;
+            margin-bottom: 40px;
+        }
+
+        .example-card {
+            background: white;
+            border-radius: 16px;
+            padding: 30px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+        }
+
+        .example-card h2 {
+            color: #1e3a8a;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .example-card .icon {
+            font-size: 1.5rem;
+        }
+
+        .example-card p {
+            color: #64748b;
+            margin-bottom: 20px;
+            line-height: 1.6;
+        }
+
+        .code-container {
+            background: #1e293b;
+            border-radius: 8px;
+            padding: 20px;
+            overflow-x: auto;
+            margin-bottom: 15px;
+        }
+
+        .code-container pre {
+            color: #e2e8f0;
+            font-family: 'Courier New', monospace;
+            font-size: 14px;
+            line-height: 1.6;
+        }
+
+        .code-container .comment {
+            color: #94a3b8;
+        }
+
+        .code-container .tag {
+            color: #60a5fa;
+        }
+
+        .code-container .attr {
+            color: #34d399;
+        }
+
+        .code-container .string {
+            color: #fbbf24;
+        }
+
+        .code-container .keyword {
+            color: #c084fc;
+        }
+
+        .badge {
+            display: inline-block;
+            background: #dbeafe;
+            color: #1e40af;
+            padding: 4px 12px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: 600;
+            margin-bottom: 15px;
+        }
+
+        .info-box {
+            background: #f0f9ff;
+            border-left: 4px solid #3b82f6;
+            padding: 20px;
+            border-radius: 8px;
+            margin-top: 40px;
+        }
+
+        .info-box h3 {
+            color: #1e40af;
+            margin-bottom: 10px;
+        }
+
+        .info-box ul {
+            list-style: none;
+            padding: 0;
+        }
+
+        .info-box li {
+            padding: 8px 0;
+            color: #475569;
+        }
+
+        .info-box li::before {
+            content: "✓ ";
+            color: #10b981;
+            font-weight: bold;
+            margin-right: 8px;
+        }
+
+        .test-section {
+            background: white;
+            border-radius: 16px;
+            padding: 30px;
+            margin-top: 40px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+        }
+
+        .test-section h2 {
+            color: #1e3a8a;
+            margin-bottom: 20px;
+        }
+
+        .test-buttons {
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+
+        .test-btn {
+            background: #3b82f6;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .test-btn:hover {
+            background: #2563eb;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(59, 130, 246, 0.4);
+        }
+
+        .test-btn:active {
+            transform: translateY(0);
+        }
+
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 2rem;
+            }
+
+            .examples-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🚀 Exemples d'Intégration</h1>
+            <p>Widget LiveKit Agent - Prêt à l'emploi</p>
+        </div>
+
+        <div class="examples-grid">
+            <!-- Exemple 1: HTML Pur -->
+            <div class="example-card">
+                <span class="badge">HTML PUR</span>
+                <h2><span class="icon">📄</span> Intégration Basique</h2>
+                <p>La méthode la plus simple pour intégrer le widget dans n'importe quelle page HTML.</p>
+                
+                <div class="code-container">
+                    <pre><span class="comment">&lt;!-- Chargez le widget --&gt;</span>
+<span class="tag">&lt;script</span> <span class="attr">src</span>=<span class="string">"livekit-agent-widget.js"</span><span class="tag">&gt;&lt;/script&gt;</span>
+
+<span class="comment">&lt;!-- Initialisez --&gt;</span>
+<span class="tag">&lt;script&gt;</span>
+  <span class="keyword">LiveKitAgentWidget</span>.<span class="keyword">init</span>({
+    <span class="attr">agentName</span>: <span class="string">'Support Client'</span>
+  });
+<span class="tag">&lt;/script&gt;</span></pre>
+                </div>
+            </div>
+
+            <!-- Exemple 2: Configuration Avancée -->
+            <div class="example-card">
+                <span class="badge">PERSONNALISÉ</span>
+                <h2><span class="icon">⚙️</span> Configuration Complète</h2>
+                <p>Personnalisez les couleurs et l'endpoint API selon vos besoins.</p>
+                
+                <div class="code-container">
+                    <pre><span class="tag">&lt;script&gt;</span>
+  <span class="keyword">LiveKitAgentWidget</span>.<span class="keyword">init</span>({
+    <span class="attr">agentName</span>: <span class="string">'Assistant IA'</span>,
+    <span class="attr">apiEndpoint</span>: <span class="string">'/api/connect'</span>,
+    <span class="attr">primaryColor</span>: <span class="string">'#6366f1'</span>,
+    <span class="attr">darkPrimaryColor</span>: <span class="string">'#818cf8'</span>
+  });
+<span class="tag">&lt;/script&gt;</span></pre>
+                </div>
+            </div>
+
+            <!-- Exemple 3: WordPress -->
+            <div class="example-card">
+                <span class="badge">WORDPRESS</span>
+                <h2><span class="icon">📝</span> WordPress Theme</h2>
+                <p>Ajoutez le widget à votre thème WordPress via functions.php ou footer.php.</p>
+                
+                <div class="code-container">
+                    <pre><span class="comment">&lt;!-- Dans footer.php --&gt;</span>
+<span class="tag">&lt;script</span> <span class="attr">src</span>=<span class="string">"&lt;?php echo get_template_directory_uri(); ?&gt;/js/livekit-agent-widget.js"</span><span class="tag">&gt;&lt;/script&gt;</span>
+<span class="tag">&lt;script&gt;</span>
+  <span class="keyword">LiveKitAgentWidget</span>.<span class="keyword">init</span>({
+    <span class="attr">agentName</span>: <span class="string">'Support WP'</span>
+  });
+<span class="tag">&lt;/script&gt;</span></pre>
+                </div>
+            </div>
+
+            <!-- Exemple 4: React -->
+            <div class="example-card">
+                <span class="badge">REACT</span>
+                <h2><span class="icon">⚛️</span> React Component</h2>
+                <p>Intégration dans une application React avec useEffect.</p>
+                
+                <div class="code-container">
+                    <pre><span class="keyword">import</span> { useEffect } <span class="keyword">from</span> <span class="string">'react'</span>;
+
+<span class="keyword">function</span> <span class="attr">App</span>() {
+  <span class="keyword">useEffect</span>(() => {
+    <span class="keyword">const</span> script = document.<span class="attr">createElement</span>(<span class="string">'script'</span>);
+    script.src = <span class="string">'/livekit-agent-widget.js'</span>;
+    script.onload = () => {
+      window.<span class="keyword">LiveKitAgentWidget</span>.<span class="keyword">init</span>({
+        <span class="attr">agentName</span>: <span class="string">'React Agent'</span>
+      });
+    };
+    document.body.<span class="attr">appendChild</span>(script);
+  }, []);
+}</pre>
+                </div>
+            </div>
+
+            <!-- Exemple 5: Vue.js -->
+            <div class="example-card">
+                <span class="badge">VUE.JS</span>
+                <h2><span class="icon">💚</span> Vue Component</h2>
+                <p>Intégration dans une application Vue.js avec onMounted.</p>
+                
+                <div class="code-container">
+                    <pre><span class="tag">&lt;script setup&gt;</span>
+<span class="keyword">import</span> { onMounted } <span class="keyword">from</span> <span class="string">'vue'</span>;
+
+<span class="keyword">onMounted</span>(() => {
+  <span class="keyword">const</span> script = document.<span class="attr">createElement</span>(<span class="string">'script'</span>);
+  script.src = <span class="string">'/livekit-agent-widget.js'</span>;
+  script.onload = () => {
+    window.<span class="keyword">LiveKitAgentWidget</span>.<span class="keyword">init</span>({
+      <span class="attr">agentName</span>: <span class="string">'Vue Agent'</span>
+    });
+  };
+  document.body.<span class="attr">appendChild</span>(script);
+});
+<span class="tag">&lt;/script&gt;</span></pre>
+                </div>
+            </div>
+
+            <!-- Exemple 6: E-commerce -->
+            <div class="example-card">
+                <span class="badge">E-COMMERCE</span>
+                <h2><span class="icon">🛒</span> Site E-commerce</h2>
+                <p>Configuration optimale pour un site de vente en ligne.</p>
+                
+                <div class="code-container">
+                    <pre><span class="tag">&lt;script&gt;</span>
+  <span class="keyword">LiveKitAgentWidget</span>.<span class="keyword">init</span>({
+    <span class="attr">agentName</span>: <span class="string">'Assistant Shopping'</span>,
+    <span class="attr">primaryColor</span>: <span class="string">'#f59e0b'</span>,
+    <span class="comment">// Orange pour attirer l'attention</span>
+    <span class="attr">apiEndpoint</span>: <span class="string">'/api/shop-agent'</span>
+  });
+<span class="tag">&lt;/script&gt;</span></pre>
+                </div>
+            </div>
+        </div>
+
+        <div class="info-box">
+            <h3>✨ Fonctionnalités Clés</h3>
+            <ul>
+                <li>Installation en 2 lignes de code</li>
+                <li>Isolation complète avec Shadow DOM</li>
+                <li>Aucun conflit CSS ou JavaScript</li>
+                <li>Support automatique du dark mode</li>
+                <li>Responsive sur tous les appareils</li>
+                <li>Deux modes d'affichage (Popup et Inline)</li>
+                <li>Personnalisation facile des couleurs</li>
+                <li>Compatible avec tous les frameworks</li>
+            </ul>
+        </div>
+
+        <div class="test-section">
+            <h2>🧪 Testez le Widget</h2>
+            <p style="color: #64748b; margin-bottom: 20px;">
+                Le widget est actif sur cette page ! Utilisez les boutons flottants en bas à droite pour tester :
+            </p>
+            <div class="test-buttons">
+                <button class="test-btn" onclick="alert('Cliquez sur le bouton 💬 en bas à droite pour ouvrir le mode Popup')">
+                    💬 Mode Popup
+                </button>
+                <button class="test-btn" onclick="alert('Cliquez sur le bouton 🎯 en bas à droite pour ouvrir le mode Inline')">
+                    🎯 Mode Inline
+                </button>
+            </div>
+        </div>
+
+        <div class="info-box" style="margin-top: 40px; background: #fef3c7; border-left-color: #f59e0b;">
+            <h3 style="color: #92400e;">📚 Documentation</h3>
+            <ul>
+                <li><strong>QUICK-START.md</strong> - Guide de démarrage rapide</li>
+                <li><strong>WIDGET-README.md</strong> - Documentation complète</li>
+                <li><strong>INTEGRATION-SUMMARY.md</strong> - Résumé du projet</li>
+                <li><strong>demo.html</strong> - Démonstration interactive</li>
+                <li><strong>minimal-example.html</strong> - Exemple minimal</li>
+            </ul>
+        </div>
+    </div>
+
+    <!-- Widget Integration -->
+    <script src="livekit-agent-widget.js"></script>
+    <script>
+        LiveKitAgentWidget.init({
+            agentName: 'Demo Agent',
+            apiEndpoint: '/api/connection-details',
+            primaryColor: '#3b82f6',
+            darkPrimaryColor: '#60a5fa'
+        });
+    </script>
+</body>
+</html>

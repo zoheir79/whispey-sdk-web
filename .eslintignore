@@ -1,0 +1,5 @@
+webpack.config.js
+webpack.widget.config.js
+webpack.adexgenie.config.js
+public/livekit-agent-widget.js
+src/adexgenie-widget.js

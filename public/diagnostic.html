@@ -1,0 +1,468 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Widget Diagnostic Tool</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Courier New', monospace;
+            background: #1e1e1e;
+            color: #d4d4d4;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        h1 {
+            color: #4ec9b0;
+            margin-bottom: 20px;
+            font-size: 24px;
+        }
+
+        .section {
+            background: #252526;
+            border: 1px solid #3e3e42;
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+
+        .section-title {
+            color: #569cd6;
+            font-size: 18px;
+            margin-bottom: 15px;
+            border-bottom: 1px solid #3e3e42;
+            padding-bottom: 10px;
+        }
+
+        .status-item {
+            display: flex;
+            align-items: center;
+            padding: 10px;
+            margin: 5px 0;
+            background: #2d2d30;
+            border-radius: 4px;
+        }
+
+        .status-icon {
+            width: 24px;
+            height: 24px;
+            margin-right: 12px;
+            font-size: 18px;
+        }
+
+        .status-label {
+            flex: 1;
+            color: #cccccc;
+        }
+
+        .status-value {
+            color: #4ec9b0;
+            font-weight: bold;
+        }
+
+        .status-value.error {
+            color: #f48771;
+        }
+
+        .status-value.warning {
+            color: #dcdcaa;
+        }
+
+        .log-container {
+            background: #1e1e1e;
+            border: 1px solid #3e3e42;
+            border-radius: 4px;
+            padding: 15px;
+            max-height: 400px;
+            overflow-y: auto;
+            font-size: 12px;
+        }
+
+        .log-entry {
+            padding: 4px 0;
+            border-bottom: 1px solid #2d2d30;
+        }
+
+        .log-entry:last-child {
+            border-bottom: none;
+        }
+
+        .log-time {
+            color: #858585;
+            margin-right: 10px;
+        }
+
+        .log-level {
+            margin-right: 10px;
+            font-weight: bold;
+        }
+
+        .log-level.info { color: #569cd6; }
+        .log-level.success { color: #4ec9b0; }
+        .log-level.error { color: #f48771; }
+        .log-level.warning { color: #dcdcaa; }
+
+        .button {
+            background: #0e639c;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 4px;
+            cursor: pointer;
+            margin: 5px;
+            font-family: 'Courier New', monospace;
+        }
+
+        .button:hover {
+            background: #1177bb;
+        }
+
+        .button.secondary {
+            background: #3e3e42;
+        }
+
+        .button.secondary:hover {
+            background: #505050;
+        }
+
+        .code-block {
+            background: #1e1e1e;
+            border: 1px solid #3e3e42;
+            border-radius: 4px;
+            padding: 15px;
+            margin: 10px 0;
+            overflow-x: auto;
+        }
+
+        .code-block pre {
+            margin: 0;
+            color: #d4d4d4;
+        }
+
+        .json-key { color: #9cdcfe; }
+        .json-string { color: #ce9178; }
+        .json-number { color: #b5cea8; }
+        .json-boolean { color: #569cd6; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🔍 LiveKit Widget Diagnostic Tool</h1>
+
+        <div class="section">
+            <div class="section-title">System Status</div>
+            <div id="system-status"></div>
+        </div>
+
+        <div class="section">
+            <div class="section-title">API Connection Test</div>
+            <div id="api-status"></div>
+            <button class="button" onclick="testAPI()">Test API Connection</button>
+            <button class="button secondary" onclick="clearAPITest()">Clear</button>
+            <div id="api-response" class="code-block" style="display: none;"></div>
+        </div>
+
+        <div class="section">
+            <div class="section-title">LiveKit SDK Status</div>
+            <div id="sdk-status"></div>
+            <button class="button" onclick="testSDK()">Test SDK Loading</button>
+        </div>
+
+        <div class="section">
+            <div class="section-title">Widget Status</div>
+            <div id="widget-status"></div>
+        </div>
+
+        <div class="section">
+            <div class="section-title">Console Logs</div>
+            <button class="button secondary" onclick="clearLogs()">Clear Logs</button>
+            <div class="log-container" id="log-container"></div>
+        </div>
+
+        <div class="section">
+            <div class="section-title">Actions</div>
+            <button class="button" onclick="testPopup()">Test Popup Mode</button>
+            <button class="button" onclick="testInline()">Test Inline Mode</button>
+            <button class="button secondary" onclick="location.reload()">Reload Page</button>
+        </div>
+    </div>
+
+    <script>
+        // Logging system
+        const logContainer = document.getElementById('log-container');
+        const originalConsole = {
+            log: console.log,
+            error: console.error,
+            warn: console.warn
+        };
+
+        function addLog(message, level = 'info') {
+            const entry = document.createElement('div');
+            entry.className = 'log-entry';
+            const time = new Date().toLocaleTimeString();
+            entry.innerHTML = `
+                <span class="log-time">[${time}]</span>
+                <span class="log-level ${level}">[${level.toUpperCase()}]</span>
+                <span>${message}</span>
+            `;
+            logContainer.appendChild(entry);
+            logContainer.scrollTop = logContainer.scrollHeight;
+        }
+
+        // Override console methods
+        console.log = function(...args) {
+            originalConsole.log.apply(console, args);
+            addLog(args.join(' '), 'info');
+        };
+
+        console.error = function(...args) {
+            originalConsole.error.apply(console, args);
+            addLog(args.join(' '), 'error');
+        };
+
+        console.warn = function(...args) {
+            originalConsole.warn.apply(console, args);
+            addLog(args.join(' '), 'warning');
+        };
+
+        function clearLogs() {
+            logContainer.innerHTML = '';
+            addLog('Logs cleared', 'info');
+        }
+
+        // System status check
+        function checkSystemStatus() {
+            const status = document.getElementById('system-status');
+            const checks = [
+                {
+                    label: 'Browser',
+                    value: navigator.userAgent.split(' ').pop(),
+                    icon: '🌐'
+                },
+                {
+                    label: 'Shadow DOM Support',
+                    value: 'attachShadow' in Element.prototype ? 'Supported ✓' : 'Not Supported ✗',
+                    icon: '🔒',
+                    error: !('attachShadow' in Element.prototype)
+                },
+                {
+                    label: 'Fetch API',
+                    value: 'fetch' in window ? 'Available ✓' : 'Not Available ✗',
+                    icon: '📡',
+                    error: !('fetch' in window)
+                },
+                {
+                    label: 'WebSocket Support',
+                    value: 'WebSocket' in window ? 'Available ✓' : 'Not Available ✗',
+                    icon: '🔌',
+                    error: !('WebSocket' in window)
+                },
+                {
+                    label: 'MediaDevices API',
+                    value: navigator.mediaDevices ? 'Available ✓' : 'Not Available ✗',
+                    icon: '🎤',
+                    error: !navigator.mediaDevices
+                }
+            ];
+
+            status.innerHTML = checks.map(check => `
+                <div class="status-item">
+                    <div class="status-icon">${check.icon}</div>
+                    <div class="status-label">${check.label}</div>
+                    <div class="status-value ${check.error ? 'error' : ''}">${check.value}</div>
+                </div>
+            `).join('');
+        }
+
+        // API test
+        async function testAPI() {
+            const statusDiv = document.getElementById('api-status');
+            const responseDiv = document.getElementById('api-response');
+            
+            statusDiv.innerHTML = '<div class="status-item"><div class="status-icon">⏳</div><div class="status-label">Testing API connection...</div></div>';
+            responseDiv.style.display = 'none';
+
+            try {
+                const endpoint = `${window.location.origin}/api/connection-details`;
+                addLog(`Testing API: ${endpoint}`, 'info');
+                
+                const response = await fetch(endpoint);
+                const data = await response.json();
+
+                if (response.ok) {
+                    statusDiv.innerHTML = `
+                        <div class="status-item">
+                            <div class="status-icon">✅</div>
+                            <div class="status-label">API Connection</div>
+                            <div class="status-value">Success (${response.status})</div>
+                        </div>
+                    `;
+                    
+                    responseDiv.style.display = 'block';
+                    responseDiv.innerHTML = `<pre>${JSON.stringify(data, null, 2)}</pre>`;
+                    addLog('API test successful', 'success');
+                } else {
+                    throw new Error(`HTTP ${response.status}`);
+                }
+            } catch (error) {
+                statusDiv.innerHTML = `
+                    <div class="status-item">
+                        <div class="status-icon">❌</div>
+                        <div class="status-label">API Connection</div>
+                        <div class="status-value error">Failed: ${error.message}</div>
+                    </div>
+                `;
+                addLog(`API test failed: ${error.message}`, 'error');
+            }
+        }
+
+        function clearAPITest() {
+            document.getElementById('api-status').innerHTML = '';
+            document.getElementById('api-response').style.display = 'none';
+        }
+
+        // SDK test
+        function testSDK() {
+            const statusDiv = document.getElementById('sdk-status');
+            
+            if (window.LivekitClient) {
+                statusDiv.innerHTML = `
+                    <div class="status-item">
+                        <div class="status-icon">✅</div>
+                        <div class="status-label">LiveKit SDK</div>
+                        <div class="status-value">Loaded ✓</div>
+                    </div>
+                    <div class="status-item">
+                        <div class="status-icon">📦</div>
+                        <div class="status-label">SDK Version</div>
+                        <div class="status-value">${window.LivekitClient.version || 'Unknown'}</div>
+                    </div>
+                `;
+                addLog('LiveKit SDK is loaded', 'success');
+            } else {
+                statusDiv.innerHTML = `
+                    <div class="status-item">
+                        <div class="status-icon">⚠️</div>
+                        <div class="status-label">LiveKit SDK</div>
+                        <div class="status-value warning">Not loaded yet</div>
+                    </div>
+                `;
+                addLog('LiveKit SDK not loaded', 'warning');
+            }
+        }
+
+        // Widget status
+        function checkWidgetStatus() {
+            const statusDiv = document.getElementById('widget-status');
+            const container = document.getElementById('livekit-agent-widget-root');
+            
+            const checks = [];
+
+            if (window.LiveKitAgentWidget) {
+                checks.push({
+                    icon: '✅',
+                    label: 'Widget Script',
+                    value: 'Loaded ✓'
+                });
+            } else {
+                checks.push({
+                    icon: '❌',
+                    label: 'Widget Script',
+                    value: 'Not Loaded ✗',
+                    error: true
+                });
+            }
+
+            if (container) {
+                checks.push({
+                    icon: '✅',
+                    label: 'Widget Container',
+                    value: 'Created ✓'
+                });
+
+                if (container.shadowRoot) {
+                    checks.push({
+                        icon: '✅',
+                        label: 'Shadow DOM',
+                        value: 'Attached ✓'
+                    });
+
+                    const buttons = container.shadowRoot.querySelector('.lk-floating-buttons');
+                    if (buttons) {
+                        const buttonCount = buttons.querySelectorAll('.lk-float-btn').length;
+                        checks.push({
+                            icon: '✅',
+                            label: 'Floating Buttons',
+                            value: `${buttonCount} buttons ✓`
+                        });
+                    }
+                }
+            } else {
+                checks.push({
+                    icon: '⚠️',
+                    label: 'Widget Container',
+                    value: 'Not Created',
+                    error: true
+                });
+            }
+
+            statusDiv.innerHTML = checks.map(check => `
+                <div class="status-item">
+                    <div class="status-icon">${check.icon}</div>
+                    <div class="status-label">${check.label}</div>
+                    <div class="status-value ${check.error ? 'error' : ''}">${check.value}</div>
+                </div>
+            `).join('');
+        }
+
+        // Test actions
+        function testPopup() {
+            addLog('Testing Popup mode - Click the 💬 button', 'info');
+            alert('Click the 💬 button in the bottom-right corner to test Popup mode');
+        }
+
+        function testInline() {
+            addLog('Testing Inline mode - Click the 🎯 button', 'info');
+            alert('Click the 🎯 button in the bottom-right corner to test Inline mode');
+        }
+
+        // Initialize
+        addLog('Diagnostic tool initialized', 'success');
+        checkSystemStatus();
+        
+        // Check widget status periodically
+        setInterval(checkWidgetStatus, 1000);
+        
+        // Initial checks
+        setTimeout(() => {
+            testSDK();
+            checkWidgetStatus();
+        }, 500);
+    </script>
+
+    <!-- Widget Integration -->
+    <script src="livekit-agent-widget.js"></script>
+    <script>
+        try {
+            LiveKitAgentWidget.init({
+                agentName: 'Diagnostic Test Agent',
+                apiEndpoint: '/api/connection-details'
+            });
+            addLog('Widget initialized successfully', 'success');
+        } catch (error) {
+            addLog(`Widget initialization failed: ${error.message}`, 'error');
+        }
+    </script>
+</body>
+</html>

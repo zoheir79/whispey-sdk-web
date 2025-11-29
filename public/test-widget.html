@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Widget Test Page</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 40px;
+            font-family: Arial, sans-serif;
+            background: #f5f5f5;
+        }
+        .test-container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            padding: 40px;
+            border-radius: 12px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: #333;
+            margin-bottom: 20px;
+        }
+        .status {
+            padding: 15px;
+            border-radius: 8px;
+            margin: 20px 0;
+        }
+        .status.success {
+            background: #d4edda;
+            border: 1px solid #c3e6cb;
+            color: #155724;
+        }
+        .status.error {
+            background: #f8d7da;
+            border: 1px solid #f5c6cb;
+            color: #721c24;
+        }
+        .status.info {
+            background: #d1ecf1;
+            border: 1px solid #bee5eb;
+            color: #0c5460;
+        }
+        .test-item {
+            padding: 10px;
+            margin: 10px 0;
+            border-left: 3px solid #007bff;
+            background: #f8f9fa;
+        }
+        button {
+            background: #007bff;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 6px;
+            cursor: pointer;
+            margin: 5px;
+        }
+        button:hover {
+            background: #0056b3;
+        }
+        #console-output {
+            background: #1e1e1e;
+            color: #d4d4d4;
+            padding: 15px;
+            border-radius: 8px;
+            font-family: 'Courier New', monospace;
+            font-size: 12px;
+            max-height: 300px;
+            overflow-y: auto;
+            margin-top: 20px;
+        }
+        .log-entry {
+            margin: 5px 0;
+            padding: 3px 0;
+        }
+        .log-success { color: #4ec9b0; }
+        .log-error { color: #f48771; }
+        .log-info { color: #569cd6; }
+    </style>
+</head>
+<body>
+    <div class="test-container">
+        <h1>🧪 Widget Test Page</h1>
+        
+        <div id="status" class="status info">
+            Initializing tests...
+        </div>
+
+        <h2>Automated Tests</h2>
+        <div id="test-results"></div>
+
+        <h2>Manual Tests</h2>
+        <div>
+            <button onclick="testPopupMode()">Test Popup Mode (💬)</button>
+            <button onclick="testInlineMode()">Test Inline Mode (🎯)</button>
+            <button onclick="testCustomColors()">Test Custom Colors</button>
+            <button onclick="clearConsole()">Clear Console</button>
+        </div>
+
+        <h2>Console Output</h2>
+        <div id="console-output"></div>
+    </div>
+
+    <!-- Widget Integration -->
+    <script src="livekit-agent-widget.js"></script>
+    <script>
+        // Console logging
+        const consoleOutput = document.getElementById('console-output');
+        
+        function log(message, type = 'info') {
+            const entry = document.createElement('div');
+            entry.className = `log-entry log-${type}`;
+            entry.textContent = `[${new Date().toLocaleTimeString()}] ${message}`;
+            consoleOutput.appendChild(entry);
+            consoleOutput.scrollTop = consoleOutput.scrollHeight;
+        }
+
+        function clearConsole() {
+            consoleOutput.innerHTML = '';
+            log('Console cleared', 'info');
+        }
+
+        // Test functions
+        function updateStatus(message, type = 'info') {
+            const status = document.getElementById('status');
+            status.className = `status ${type}`;
+            status.textContent = message;
+        }
+
+        function addTestResult(name, passed, message = '') {
+            const results = document.getElementById('test-results');
+            const item = document.createElement('div');
+            item.className = 'test-item';
+            item.innerHTML = `
+                <strong>${passed ? '✅' : '❌'} ${name}</strong>
+                ${message ? `<br><small>${message}</small>` : ''}
+            `;
+            results.appendChild(item);
+            log(`Test: ${name} - ${passed ? 'PASSED' : 'FAILED'}`, passed ? 'success' : 'error');
+        }
+
+        // Automated tests
+        function runAutomatedTests() {
+            log('Starting automated tests...', 'info');
+            
+            // Test 1: Widget loaded
+            const widgetLoaded = typeof window.LiveKitAgentWidget !== 'undefined';
+            addTestResult('Widget Script Loaded', widgetLoaded);
+
+            // Test 2: Init function exists
+            const initExists = widgetLoaded && typeof window.LiveKitAgentWidget.init === 'function';
+            addTestResult('Init Function Exists', initExists);
+
+            // Test 3: Shadow DOM support
+            const shadowDOMSupported = 'attachShadow' in Element.prototype;
+            addTestResult('Shadow DOM Support', shadowDOMSupported);
+
+            // Test 4: Widget container created
+            setTimeout(() => {
+                const container = document.getElementById('livekit-agent-widget-root');
+                const containerExists = container !== null;
+                addTestResult('Widget Container Created', containerExists);
+
+                // Test 5: Shadow root attached
+                const shadowRootExists = containerExists && container.shadowRoot !== null;
+                addTestResult('Shadow Root Attached', shadowRootExists);
+
+                // Test 6: Floating buttons exist
+                if (shadowRootExists) {
+                    const buttons = container.shadowRoot.querySelector('.lk-floating-buttons');
+                    const buttonsExist = buttons !== null;
+                    addTestResult('Floating Buttons Created', buttonsExist);
+
+                    // Test 7: Button count
+                    if (buttonsExist) {
+                        const buttonCount = buttons.querySelectorAll('.lk-float-btn').length;
+                        addTestResult('Button Count (Expected: 2)', buttonCount === 2, `Found: ${buttonCount}`);
+                    }
+                }
+
+                // Final status
+                updateStatus('All automated tests completed!', 'success');
+                log('Automated tests completed', 'success');
+            }, 500);
+        }
+
+        // Manual test functions
+        function testPopupMode() {
+            log('Testing Popup Mode...', 'info');
+            alert('Click the 💬 button in the bottom-right corner to test Popup mode');
+        }
+
+        function testInlineMode() {
+            log('Testing Inline Mode...', 'info');
+            alert('Click the 🎯 button in the bottom-right corner to test Inline mode');
+        }
+
+        function testCustomColors() {
+            log('Testing custom colors...', 'info');
+            // Remove existing widget
+            const existing = document.getElementById('livekit-agent-widget-root');
+            if (existing) {
+                existing.remove();
+            }
+            
+            // Reinitialize with custom colors
+            LiveKitAgentWidget.init({
+                agentName: 'Custom Colors Test',
+                primaryColor: '#8b5cf6',
+                darkPrimaryColor: '#a78bfa'
+            });
+            
+            log('Widget reinitialized with purple theme', 'success');
+            updateStatus('Widget reinitialized with custom colors (purple)', 'success');
+        }
+
+        // Initialize widget
+        try {
+            LiveKitAgentWidget.init({
+                agentName: 'Test Agent',
+                apiEndpoint: '/api/connection-details'
+            });
+            log('Widget initialized successfully', 'success');
+            updateStatus('Widget initialized. Running tests...', 'info');
+            
+            // Run automated tests after a short delay
+            setTimeout(runAutomatedTests, 100);
+        } catch (error) {
+            log(`Error initializing widget: ${error.message}`, 'error');
+            updateStatus(`Error: ${error.message}`, 'error');
+        }
+
+        // Monitor console errors
+        window.addEventListener('error', (event) => {
+            log(`Error: ${event.message}`, 'error');
+        });
+
+        // Log page load
+        window.addEventListener('load', () => {
+            log('Page loaded successfully', 'success');
+        });
+    </script>
+</body>
+</html>

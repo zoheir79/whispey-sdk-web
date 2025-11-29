@@ -1,0 +1,77 @@
+@import 'tailwindcss';
+
+/* Define variables at :root level for Tailwind */
+:root {
+  --foreground: oklch(0.145 0 0);
+  --background: oklch(1 0 0);
+  --muted: #0891b2;
+  --muted-foreground: #0891b2;
+  --primary: #0891b2;
+  --border: oklch(0.922 0 0);
+  --ring: oklch(0.708 0 0);
+}
+
+/* Scope all widget styles to #adexgenie-widget-root */
+#adexgenie-widget-root {
+  /* Widget-specific CSS variables with ag- prefix */
+  --ag-fg0: #000000;
+  --ag-fg1: #3b3b3b;
+  --ag-fg2: #4d4d4d;
+  --ag-fg3: #636363;
+  --ag-fg4: #707070;
+  --ag-fgSerious: #db1b06;
+  --ag-fgSuccess: #006430;
+  --ag-fgModerate: #a65006;
+  --ag-fgAccent: #0891b2;
+
+  --ag-bg1: #f9f9f6;
+  --ag-bg2: #f3f3f1;
+  --ag-bg3: #e2e2df;
+  --ag-bgSerious: #fae6e6;
+  --ag-bgSerious2: #ffcdc7;
+  --ag-bgSuccess: #d1fadf;
+  --ag-bgModerate: #faedd1;
+  --ag-bgAccent: #b3ccff;
+  --ag-bgAccentPrimary: #e2ebfd;
+
+  --ag-separator1: #dbdbd8;
+  --ag-separator2: #bdbdbb;
+  --ag-separatorSerious: #ffcdc7;
+  --ag-separatorSuccess: #94dcb5;
+  --ag-separatorModerate: #fbd7a0;
+  --ag-separatorAccent: #b3ccff;
+
+  --ag-radius: 0.625rem;
+  --ag-background: oklch(1 0 0);
+  --ag-foreground: oklch(0.145 0 0);
+  --ag-card: oklch(1 0 0);
+  --ag-card-foreground: oklch(0.145 0 0);
+  --ag-popover: oklch(1 0 0);
+  --ag-popover-foreground: oklch(0.145 0 0);
+  --ag-primary: #0891b2;
+  --ag-primary-hover: #0e7490;
+  --ag-primary-foreground: oklch(0.985 0 0);
+  --ag-secondary: oklch(0.97 0 0);
+  --ag-secondary-foreground: oklch(0.205 0 0);
+  --ag-muted: #0891b2;
+  --ag-muted-foreground: #0891b2;
+  --ag-accent: oklch(0.97 0 0);
+  --ag-accent-foreground: #0891b2;
+  --ag-border: oklch(0.922 0 0);
+  --ag-input: oklch(0.922 0 0);
+  --ag-ring: oklch(0.708 0 0);
+  --ag-chart-1: oklch(0.646 0.222 41.116);
+  --ag-chart-2: oklch(0.6 0.118 184.704);
+  --ag-chart-3: oklch(0.398 0.07 227.392);
+  --ag-chart-4: oklch(0.828 0.189 84.429);
+  --ag-chart-5: oklch(0.769 0.188 70.08);
+  
+  /* Map Tailwind variables to widget variables */
+  --foreground: var(--ag-foreground);
+  --background: var(--ag-background);
+  --muted: var(--ag-muted);
+  --muted-foreground: var(--ag-muted-foreground);
+  --primary: var(--ag-primary);
+  --border: var(--ag-border);
+  --ring: var(--ag-ring);
+}

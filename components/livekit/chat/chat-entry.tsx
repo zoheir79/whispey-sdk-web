@@ -1,5 +1,6 @@
 import * as React from 'react';
 import type { MessageFormatter, ReceivedChatMessage } from '@livekit/components-react';
+import { parseMarkdown } from '@/lib/markdown';
 import { cn } from '@/lib/utils';
 import { useChatMessage } from './hooks/utils';
 
@@ -49,11 +50,15 @@ export const ChatEntry = ({
 
       <span
         className={cn(
-          'max-w-4/5 rounded-[20px] p-2 text-sm',
+          'prose prose-sm dark:prose-invert max-w-4/5 rounded-[20px] p-2 text-sm',
+          '[&_code]:bg-bg3 [&_code]:rounded [&_code]:px-1 [&_em]:italic [&_strong]:font-semibold',
+          '[&_li]:my-0.5 [&_ul]:my-1 [&_ul]:list-disc [&_ul]:pl-4',
+          '[&_a]:text-primary [&_a]:underline',
           isUser ? 'bg-bg3 ml-auto' : 'mr-auto'
         )}
+        dangerouslySetInnerHTML={!isUser ? { __html: parseMarkdown(String(message)) } : undefined}
       >
-        {message}
+        {isUser ? message : null}
       </span>
     </li>
   );

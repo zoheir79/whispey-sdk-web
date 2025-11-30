@@ -3,6 +3,36 @@ import type { MessageFormatter, ReceivedChatMessage } from '@livekit/components-
 import { cn } from '@/lib/utils';
 import { useChatMessage } from './hooks/utils';
 
+// Convertir le markdown basique en HTML
+function formatMarkdown(text: string): string {
+  if (!text) return '';
+
+  let html = text
+    // Escape HTML pour éviter XSS
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    // Gras **text** ou __text__
+    .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
+    .replace(/__(.+?)__/g, '<strong>$1</strong>')
+    // Listes à puces (- item ou * item)
+    .replace(/^- (.+)$/gm, '<li>$1</li>')
+    .replace(/^\* (.+)$/gm, '<li>$1</li>')
+    // Retours à la ligne
+    .replace(/\n/g, '<br>');
+
+  // Envelopper les <li> dans <ul>
+  if (html.includes('<li>')) {
+    // Remplacer les séquences de <li> par <ul>...</ul>
+    html = html
+      .replace(/<br><li>/g, '<li>')
+      .replace(/<\/li><br>/g, '</li>')
+      .replace(/(<li>[\s\S]*?<\/li>)+/g, '<ul class="list-disc pl-4 my-1">$&</ul>');
+  }
+
+  return html;
+}
+
 export interface ChatEntryProps extends React.HTMLAttributes<HTMLLIElement> {
   /** The chat massage object to display. */
   entry: ReceivedChatMessage;
@@ -52,9 +82,10 @@ export const ChatEntry = ({
           'max-w-4/5 rounded-[20px] p-2 text-sm',
           isUser ? 'bg-bg3 ml-auto' : 'mr-auto'
         )}
-      >
-        {message}
-      </span>
+        dangerouslySetInnerHTML={{
+          __html: formatMarkdown(String(message ?? '')),
+        }}
+      />
     </li>
   );
 };

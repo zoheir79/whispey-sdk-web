@@ -14,7 +14,7 @@
     
     <script>
         // Initialize the widget - Direct API call (CORS enabled)
-        window.AdexGenie.init({
+        const widget = new window.AdexGenieWidget({
             //agentId: '3731a81e-929d-4a55-9bc9-58c24db770e5',
             agentId: '24026705-d093-4db4-b36d-43427b77d4f3',
             apiUrl: 'https://monvoice.adexgenie.ai/api/agent/generate-token',
@@ -22,7 +22,7 @@
             apiKey: 'pk_agent_a0a215e8b223b9950695',
         });
         
-        console.log('✅ AdexGenie Widget initialized!');
+        console.log('✅ AdexGenie Widget React initialized with LiveKit native components!');
     </script>
 </body>
 </html>

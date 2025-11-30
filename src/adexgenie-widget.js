@@ -22,40 +22,6 @@ import { Room } from 'livekit-client';
     return;
   }
 
-  // Lightweight Markdown parser for chat messages
-  function parseMarkdown(text) {
-    if (!text) return '';
-    return (
-      text
-        // Escape HTML to prevent XSS
-        .replace(/&/g, '&amp;')
-        .replace(/</g, '&lt;')
-        .replace(/>/g, '&gt;')
-        // Code blocks
-        .replace(/```(\w*)\n?([\s\S]*?)```/g, '<pre><code>$2</code></pre>')
-        // Inline code
-        .replace(/`([^`]+)`/g, '<code>$1</code>')
-        // Bold
-        .replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>')
-        .replace(/__([^_]+)__/g, '<strong>$1</strong>')
-        // Italic
-        .replace(/\*([^*]+)\*/g, '<em>$1</em>')
-        // Links
-        .replace(
-          /\[([^\]]+)\]\(([^)]+)\)/g,
-          '<a href="$2" target="_blank" rel="noopener noreferrer">$1</a>'
-        )
-        // Unordered lists
-        .replace(/^[\-\*]\s+(.+)$/gm, '<li>$1</li>')
-        // Ordered lists
-        .replace(/^\d+\.\s+(.+)$/gm, '<li>$1</li>')
-        // Line breaks
-        .replace(/\n/g, '<br />')
-        // Wrap lists
-        .replace(/((?:<li>.*?<\/li>)+)/g, '<ul>$1</ul>')
-    );
-  }
-
   // Intercepter et masquer TOUS les logs LiveKit
   const originalConsoleLog = console.log;
   const originalConsoleDebug = console.debug;
@@ -555,44 +521,6 @@ import { Room } from 'livekit-client';
           padding: 0 4px;
         }
 
-        /* Markdown Styles */
-        .ag-message-bubble strong {
-          font-weight: 600;
-        }
-        .ag-message-bubble em {
-          font-style: italic;
-        }
-        .ag-message-bubble code {
-          background: rgba(0, 0, 0, 0.1);
-          padding: 2px 6px;
-          border-radius: 4px;
-          font-family: monospace;
-          font-size: 13px;
-        }
-        .ag-message-bubble pre {
-          background: rgba(0, 0, 0, 0.1);
-          padding: 12px;
-          border-radius: 8px;
-          overflow-x: auto;
-          margin: 8px 0;
-        }
-        .ag-message-bubble pre code {
-          background: none;
-          padding: 0;
-        }
-        .ag-message-bubble ul {
-          list-style: disc;
-          padding-left: 20px;
-          margin: 8px 0;
-        }
-        .ag-message-bubble li {
-          margin: 4px 0;
-        }
-        .ag-message-bubble a {
-          color: var(--lk-primary);
-          text-decoration: underline;
-        }
-
         /* Loading State */
         .ag-loading-view {
           position: absolute;
@@ -867,10 +795,8 @@ import { Room } from 'livekit-client';
       const now = new Date();
       const timeStr = now.toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' });
 
-      // Parse markdown for agent messages only
-      const formattedText = sender === 'agent' ? parseMarkdown(text) : text;
       messageDiv.innerHTML = `
-        <div class="ag-message-bubble">${formattedText}</div>
+        <div class="ag-message-bubble">${text}</div>
         <div class="ag-message-time">${timeStr}</div>
       `;
 

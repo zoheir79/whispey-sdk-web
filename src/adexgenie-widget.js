@@ -778,6 +778,37 @@ import { Room } from 'livekit-client';
       }
     }
 
+    // Convertir le markdown basique en HTML
+    formatMarkdown(text) {
+      if (!text) return '';
+
+      let html = text
+        // Escape HTML pour éviter XSS
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        // Gras **text** ou __text__
+        .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
+        .replace(/__(.+?)__/g, '<strong>$1</strong>')
+        // Italique *text* ou _text_
+        .replace(/\*(.+?)\*/g, '<em>$1</em>')
+        .replace(/_(.+?)_/g, '<em>$1</em>')
+        // Listes à puces (- item)
+        .replace(/^- (.+)$/gm, '<li>$1</li>')
+        // Retours à la ligne
+        .replace(/\n/g, '<br>');
+
+      // Envelopper les <li> dans <ul>
+      if (html.includes('<li>')) {
+        html = html.replace(/(<li>.*<\/li>)/gs, '<ul>$1</ul>');
+        // Nettoyer les <br> autour des <ul>
+        html = html.replace(/<br><ul>/g, '<ul>');
+        html = html.replace(/<\/ul><br>/g, '</ul>');
+      }
+
+      return html;
+    }
+
     addMessage(text, sender = 'agent') {
       const sessionBody = this['AG-shadowRoot'].querySelector('.ag-session-body');
       if (!sessionBody) return;
@@ -795,8 +826,11 @@ import { Room } from 'livekit-client';
       const now = new Date();
       const timeStr = now.toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' });
 
+      // Formater le texte markdown en HTML
+      const formattedText = this.formatMarkdown(text);
+
       messageDiv.innerHTML = `
-        <div class="ag-message-bubble">${text}</div>
+        <div class="ag-message-bubble">${formattedText}</div>
         <div class="ag-message-time">${timeStr}</div>
       `;
 

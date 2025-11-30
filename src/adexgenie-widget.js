@@ -873,5 +873,7 @@ import { Room } from 'livekit-client';
     }
   }
 
+  // Expose both the class and an instance for flexibility
+  window.AdexGenieWidget = AdexGenie;
   window.AdexGenie = new AdexGenie();
 })();

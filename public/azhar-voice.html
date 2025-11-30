@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test AdexGenie Widget</title>
+
+</head>
+<body>
+
+
+    <!-- Load AdexGenie Widget React (React + LiveKit components bundled inside) -->
+    <script src="/adexgenie-widget.min.js"></script>
+    
+    <script>
+        // Initialize the widget - Direct API call (CORS enabled)
+        const widget = new window.AdexGenieWidget({
+            //agentId: '3731a81e-929d-4a55-9bc9-58c24db770e5',
+            agentId: '97b47c65-1dda-410f-a48c-f68fe4cfcb0a',
+            apiUrl: 'https://monvoice.adexgenie.ai/api/agent/generate-token',
+            //apiKey: 'pk_agent_f8ca78c3a0483798bd5f',
+            apiKey: 'pk_agent_8929d49d32aa9f7a70a5',
+        });
+        
+        console.log('✅ AdexGenie Widget React initialized with LiveKit native components!');
+    </script>
+</body>
+</html>

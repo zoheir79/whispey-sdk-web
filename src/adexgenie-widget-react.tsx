@@ -3,6 +3,8 @@ import ReactDOM from 'react-dom/client';
 import { LogLevel, setLogLevel } from 'livekit-client';
 import { LiveKitRoom, RoomAudioRenderer, StartAudio } from '@livekit/components-react';
 import { PopupView } from '@/components/embed-popup/popup-view';
+import { AgentProvider, useAgentCapabilities } from '@/contexts/agent-context';
+import type { AgentInfo, FlowType } from '@/hooks/use-connection-details';
 import '@/styles/globals.css';
 
 // Disable LiveKit logs
@@ -19,6 +21,70 @@ interface ConnectionDetails {
   participantToken: string;
   participantName: string;
   agentName: string;
+  agent?: AgentInfo;
+}
+
+function normalizeFlowType(value: unknown): FlowType {
+  const v = typeof value === 'string' ? value.toLowerCase() : '';
+
+  if (v === 'voice') return 'voice';
+  if (v === 'text' || v === 'textonly' || v === 'text_only') return 'text';
+  if (v === 'audio_to_text' || v === 'audiototext' || v === 'audio->text') return 'audio_to_text';
+  if (v === 'text_to_audio' || v === 'texttoaudio' || v === 'text->audio') return 'text_to_audio';
+
+  return 'voice';
+}
+
+type WidgetRoomProps = {
+  serverUrl: string;
+  participantToken: string;
+  agent?: AgentInfo;
+  onDisconnected: () => void;
+};
+
+function WidgetRoom({ serverUrl, participantToken, agent, onDisconnected }: WidgetRoomProps) {
+  return (
+    <AgentProvider agent={agent}>
+      <WidgetRoomInner
+        serverUrl={serverUrl}
+        participantToken={participantToken}
+        onDisconnected={onDisconnected}
+      />
+    </AgentProvider>
+  );
+}
+
+type WidgetRoomInnerProps = {
+  serverUrl: string;
+  participantToken: string;
+  onDisconnected: () => void;
+};
+
+function WidgetRoomInner({ serverUrl, participantToken, onDisconnected }: WidgetRoomInnerProps) {
+  const { canUseMicrophone, hasAudioOutput } = useAgentCapabilities();
+
+  return (
+    <LiveKitRoom
+      serverUrl={serverUrl}
+      token={participantToken}
+      connect={true}
+      audio={canUseMicrophone}
+      video={false}
+      onDisconnected={onDisconnected}
+    >
+      {hasAudioOutput && (
+        <>
+          <RoomAudioRenderer />
+          <StartAudio label="Start Audio" />
+        </>
+      )}
+      <PopupView
+        disabled={false}
+        sessionStarted={true}
+        onDisplayError={(err) => console.error('Session error:', err)}
+      />
+    </LiveKitRoom>
+  );
 }
 
 class AdexGenieWidget {
@@ -193,11 +259,21 @@ class AdexGenieWidget {
 
       const data = await response.json();
 
+      const rawFlowType = data.agent?.flow_type ?? data.agent?.flowType ?? data.metadata?.flowType;
+      const flowType = normalizeFlowType(rawFlowType);
+      const agent: AgentInfo | undefined = rawFlowType || data.agent || data.metadata?.agentType ? {
+        id: data.agent?.id ?? data.metadata?.agentId ?? this.agentId,
+        name: data.agent?.name ?? data.metadata?.agentName ?? data.agent_name ?? 'Agent',
+        type: data.agent?.type ?? data.metadata?.agentType ?? 'voice',
+        flowType,
+      } : undefined;
+
       this.connectionDetails = {
         serverUrl: data.url || data.server_url || data.serverUrl,
         participantToken: data.token || data.participant_token || data.participantToken,
         participantName: data.participant_name || 'User',
-        agentName: data.agent_name || 'Agent',
+        agentName: agent?.name ?? data.agent_name ?? 'Agent',
+        agent,
       };
     } catch (error) {
       console.error('Error fetching connection details:', error);
@@ -282,22 +358,12 @@ class AdexGenieWidget {
     // Only render if we have valid connection details
     if (this.connectionDetails.serverUrl && this.connectionDetails.participantToken) {
       this.reactRoot.render(
-        <LiveKitRoom
+        <WidgetRoom
           serverUrl={this.connectionDetails.serverUrl}
-          token={this.connectionDetails.participantToken}
-          connect={true}
-          audio={true}
-          video={false}
+          participantToken={this.connectionDetails.participantToken}
+          agent={this.connectionDetails.agent}
           onDisconnected={() => this.close()}
-        >
-          <RoomAudioRenderer />
-          <StartAudio label="Start Audio" />
-          <PopupView
-            disabled={false}
-            sessionStarted={true}
-            onDisplayError={(err) => console.error('Session error:', err)}
-          />
-        </LiveKitRoom>
+        />
       );
     } else {
       console.error('Invalid connection details:', this.connectionDetails);

@@ -20,6 +20,49 @@ import type { EmbedErrorDetails } from '@/lib/types';
 import { cn } from '@/lib/utils';
 import { ChatInput } from '../livekit/chat/chat-input';
 
+function AgentStateIndicator({ agentState }: { agentState: AgentState }) {
+  const shouldAnimate =
+    agentState === 'thinking' || agentState === 'connecting' || agentState === 'initializing';
+
+  return (
+    <div className="flex h-full w-auto items-center justify-center gap-3">
+      {Array.from({ length: 5 }).map((_, i) => (
+        <motion.span
+          key={i}
+          className={cn([
+            'bg-muted min-h-6 w-6 rounded-full',
+            'origin-center transition-colors duration-250 ease-linear',
+            'data-[lk-highlighted=true]:bg-primary data-[lk-muted=true]:bg-muted',
+          ])}
+          animate={
+            shouldAnimate
+              ? {
+                  opacity: [0.35, 1, 0.35],
+                  scale: [0.85, 1, 0.85],
+                }
+              : {
+                  opacity: agentState === 'disconnected' ? 0.25 : 1,
+                  scale: 1,
+                }
+          }
+          transition={
+            shouldAnimate
+              ? {
+                  duration: 1.1,
+                  repeat: Infinity,
+                  ease: 'easeInOut',
+                  delay: i * 0.08,
+                }
+              : {
+                  duration: 0.15,
+                }
+          }
+        />
+      ))}
+    </div>
+  );
+}
+
 function isAgentAvailable(agentState: AgentState) {
   return agentState == 'listening' || agentState == 'thinking' || agentState == 'speaking';
 }
@@ -104,32 +147,32 @@ export const PopupView = ({
   return (
     <div ref={ref} inert={disabled} className="flex h-full w-full flex-col overflow-hidden">
       <div className="relative flex h-full shrink-1 grow-1 flex-col p-1">
-        {hasAudioOutput ? (
-          <motion.div
-            className={cn(
-              'bg-bg2 dark:bg-bg1 pointer-events-none absolute z-10 flex aspect-[1.5] w-64 items-center justify-center rounded-2xl border border-transparent transition-colors',
-              agentHasConnected && 'bg-bg1 border-separator1 drop-shadow-2xl'
-            )}
-            initial={{
-              scale: 1,
-              left: '50%',
-              top: '50%',
-              translateX: '-50%',
-              translateY: '-50%',
-              transformOrigin: 'center top',
-            }}
-            animate={{
-              scale: agentHasConnected ? 0.4 : 1,
-              top: agentHasConnected ? '12px' : '50%',
-              translateY: agentHasConnected ? '0' : '-50%',
-            }}
-            transition={{
-              type: 'spring',
-              stiffness: 675,
-              damping: 75,
-              mass: 1,
-            }}
-          >
+        <motion.div
+          className={cn(
+            'bg-bg2 dark:bg-bg1 pointer-events-none absolute z-10 flex aspect-[1.5] w-64 items-center justify-center rounded-2xl border border-transparent transition-colors',
+            agentHasConnected && 'bg-bg1 border-separator1 drop-shadow-2xl'
+          )}
+          initial={{
+            scale: 1,
+            left: '50%',
+            top: '50%',
+            translateX: '-50%',
+            translateY: '-50%',
+            transformOrigin: 'center top',
+          }}
+          animate={{
+            scale: agentHasConnected ? 0.4 : 1,
+            top: agentHasConnected ? '12px' : '50%',
+            translateY: agentHasConnected ? '0' : '-50%',
+          }}
+          transition={{
+            type: 'spring',
+            stiffness: 675,
+            damping: 75,
+            mass: 1,
+          }}
+        >
+          {hasAudioOutput ? (
             <BarVisualizer
               barCount={5}
               state={agentState}
@@ -145,8 +188,10 @@ export const PopupView = ({
                 ])}
               />
             </BarVisualizer>
-          </motion.div>
-        ) : null}
+          ) : (
+            <AgentStateIndicator agentState={agentState} />
+          )}
+        </motion.div>
 
         {/* Transcript */}
         <div

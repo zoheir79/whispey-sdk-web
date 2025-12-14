@@ -25,12 +25,19 @@ interface ConnectionDetails {
 }
 
 function normalizeFlowType(value: unknown): FlowType {
-  const v = typeof value === 'string' ? value.toLowerCase() : '';
+  const vRaw = typeof value === 'string' ? value.toLowerCase().trim() : '';
+  const v = vRaw
+    .replace(/\s+/g, '_')
+    .replace(/-/g, '_')
+    .replace(/>/g, '')
+    .replace(/\//g, '_')
+    .replace(/_+/g, '_')
+    .replace(/^_+|_+$/g, '');
 
   if (v === 'voice') return 'voice';
   if (v === 'text' || v === 'textonly' || v === 'text_only') return 'text';
-  if (v === 'audio_to_text' || v === 'audiototext' || v === 'audio->text') return 'audio_to_text';
-  if (v === 'text_to_audio' || v === 'texttoaudio' || v === 'text->audio') return 'text_to_audio';
+  if (v === 'audio_to_text' || v === 'audiototext' || v === 'audio_text') return 'audio_to_text';
+  if (v === 'text_to_audio' || v === 'texttoaudio' || v === 'text_audio') return 'text_to_audio';
 
   return 'voice';
 }
@@ -94,13 +101,26 @@ class AdexGenieWidget {
   private apiUrl: string;
   private agentId: string;
   private apiKey: string;
+  private flowTypeOverride: FlowType | undefined;
+  private agentTypeOverride: AgentInfo['type'] | undefined;
+  private agentNameOverride: string | undefined;
   private reactRoot: ReturnType<typeof ReactDOM.createRoot> | null = null;
   private fab: HTMLButtonElement | null = null;
 
-  constructor(config: { apiUrl: string; agentId: string; apiKey: string }) {
+  constructor(config: {
+    apiUrl: string;
+    agentId: string;
+    apiKey: string;
+    flowType?: FlowType;
+    agentType?: AgentInfo['type'];
+    agentName?: string;
+  }) {
     this.apiUrl = config.apiUrl;
     this.agentId = config.agentId;
     this.apiKey = config.apiKey;
+    this.flowTypeOverride = config.flowType;
+    this.agentTypeOverride = config.agentType;
+    this.agentNameOverride = config.agentName;
 
     // Create container directly in body
     this.container = document.createElement('div');
@@ -259,14 +279,48 @@ class AdexGenieWidget {
 
       const data = await response.json();
 
-      const rawFlowType = data.agent?.flow_type ?? data.agent?.flowType ?? data.metadata?.flowType;
-      const flowType = normalizeFlowType(rawFlowType);
-      const agent: AgentInfo | undefined = rawFlowType || data.agent || data.metadata?.agentType ? {
-        id: data.agent?.id ?? data.metadata?.agentId ?? this.agentId,
-        name: data.agent?.name ?? data.metadata?.agentName ?? data.agent_name ?? 'Agent',
-        type: data.agent?.type ?? data.metadata?.agentType ?? 'voice',
-        flowType,
-      } : undefined;
+      const rawFlowType =
+        this.flowTypeOverride ??
+        data.agent?.flow_type ??
+        data.agent?.flowType ??
+        data.metadata?.flowType;
+      const rawAgentType = this.agentTypeOverride ?? data.agent?.type ?? data.metadata?.agentType;
+      const flowFromFlowType = normalizeFlowType(rawFlowType);
+      const flowFromAgentType = normalizeFlowType(rawAgentType);
+      const flowType =
+        flowFromAgentType === 'text'
+          ? 'text'
+          : flowFromFlowType !== 'voice'
+            ? flowFromFlowType
+            : flowFromAgentType;
+      const agentType = (rawAgentType ?? 'voice') as AgentInfo['type'];
+      const agentName =
+        this.agentNameOverride ??
+        data.agent?.name ??
+        data.metadata?.agentName ??
+        data.agent_name ??
+        'Agent';
+      const agent: AgentInfo | undefined =
+        rawFlowType || rawAgentType || data.agent || data.metadata?.agentType
+          ? {
+              id: data.agent?.id ?? data.metadata?.agentId ?? this.agentId,
+              name: agentName,
+              type: agentType,
+              flowType,
+            }
+          : undefined;
+
+      if (
+        typeof window !== 'undefined' &&
+        (window as unknown as { AdexGenieWidgetDebug?: boolean }).AdexGenieWidgetDebug
+      ) {
+        console.log('[AdexGenieWidget] agent flow detection', {
+          rawFlowType,
+          rawAgentType,
+          resolvedFlowType: flowType,
+          agentType: agent?.type,
+        });
+      }
 
       this.connectionDetails = {
         serverUrl: data.url || data.server_url || data.serverUrl,

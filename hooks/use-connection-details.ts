@@ -18,6 +18,24 @@ export type ConnectionDetails = {
   agent?: AgentInfo;
 };
 
+function normalizeFlowType(value: unknown): FlowType {
+  const vRaw = typeof value === 'string' ? value.toLowerCase().trim() : '';
+  const v = vRaw
+    .replace(/\s+/g, '_')
+    .replace(/-/g, '_')
+    .replace(/>/g, '')
+    .replace(/\//g, '_')
+    .replace(/_+/g, '_')
+    .replace(/^_+|_+$/g, '');
+
+  if (v === 'voice') return 'voice';
+  if (v === 'text' || v === 'textonly' || v === 'text_only') return 'text';
+  if (v === 'audio_to_text' || v === 'audiototext' || v === 'audio_text') return 'audio_to_text';
+  if (v === 'text_to_audio' || v === 'texttoaudio' || v === 'text_audio') return 'text_to_audio';
+
+  return 'voice';
+}
+
 export default function useConnectionDetails() {
   const [connectionDetails, setConnectionDetails] = useState<ConnectionDetails | null>(null);
 
@@ -61,19 +79,30 @@ export default function useConnectionDetails() {
       const data = await response.json();
 
       // Parse agent info from API response
+      const rawFlowType = data.agent?.flow_type ?? data.agent?.flowType ?? data.metadata?.flowType;
+      const rawAgentType = data.agent?.type ?? data.metadata?.agentType;
+      const flowFromFlowType = normalizeFlowType(rawFlowType);
+      const flowFromAgentType = normalizeFlowType(rawAgentType);
+      const flowType =
+        flowFromAgentType === 'text'
+          ? 'text'
+          : flowFromFlowType !== 'voice'
+            ? flowFromFlowType
+            : flowFromAgentType;
+
       const agentInfo: AgentInfo | undefined = data.agent
         ? {
             id: data.agent.id,
             name: data.agent.name,
             type: data.agent.type || 'voice',
-            flowType: data.agent.flow_type || data.metadata?.flowType || 'voice',
+            flowType,
           }
         : data.metadata?.flowType
           ? {
               id: data.metadata.agentId || '',
               name: data.metadata.agentName || '',
               type: data.metadata.agentType || 'voice',
-              flowType: data.metadata.flowType || 'voice',
+              flowType,
             }
           : undefined;
 

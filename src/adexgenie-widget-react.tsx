@@ -94,6 +94,8 @@ function WidgetRoomInner({ serverUrl, participantToken, onDisconnected }: Widget
   );
 }
 
+type DisplayMode = 'popup' | 'fullWindow';
+
 class AdexGenieWidget {
   private container: HTMLElement;
   private isOpen: boolean = false;
@@ -104,6 +106,7 @@ class AdexGenieWidget {
   private flowTypeOverride: FlowType | undefined;
   private agentTypeOverride: AgentInfo['type'] | undefined;
   private agentNameOverride: string | undefined;
+  private displayMode: DisplayMode;
   private reactRoot: ReturnType<typeof ReactDOM.createRoot> | null = null;
   private fab: HTMLButtonElement | null = null;
 
@@ -114,6 +117,7 @@ class AdexGenieWidget {
     flowType?: FlowType;
     agentType?: AgentInfo['type'];
     agentName?: string;
+    displayMode?: DisplayMode;
   }) {
     this.apiUrl = config.apiUrl;
     this.agentId = config.agentId;
@@ -121,13 +125,19 @@ class AdexGenieWidget {
     this.flowTypeOverride = config.flowType;
     this.agentTypeOverride = config.agentType;
     this.agentNameOverride = config.agentName;
+    this.displayMode = config.displayMode || 'popup';
 
     // Create container directly in body
     this.container = document.createElement('div');
     this.container.id = 'adexgenie-widget-root';
     document.body.appendChild(this.container);
 
-    this.init();
+    // For fullWindow mode, auto-open immediately
+    if (this.displayMode === 'fullWindow') {
+      this.initFullWindow();
+    } else {
+      this.init();
+    }
   }
 
   private init() {
@@ -145,6 +155,123 @@ class AdexGenieWidget {
     this.fab.onclick = () => this.toggle();
 
     this.container.appendChild(this.fab);
+  }
+
+  private async initFullWindow() {
+    // Add fullWindow styles to document head
+    const style = document.createElement('style');
+    style.textContent = this.getFullWindowStyles();
+    document.head.appendChild(style);
+
+    // Create fullWindow container
+    const fullWindowContainer = document.createElement('div');
+    fullWindowContainer.className = 'ag-fullwindow-container';
+    this.container.appendChild(fullWindowContainer);
+
+    // Show loading state
+    fullWindowContainer.innerHTML = `
+      <div style="display: flex; align-items: center; justify-content: center; height: 100%; flex-direction: column; gap: 16px;">
+        <div style="width: 40px; height: 40px; border: 3px solid #e2e2df; border-top-color: #0891b2; border-radius: 50%; animation: spin 0.8s linear infinite;"></div>
+        <p style="color: #6b7280; font-size: 14px;">Connexion en cours...</p>
+      </div>
+      <style>
+        @keyframes spin {
+          to { transform: rotate(360deg); }
+        }
+      </style>
+    `;
+
+    // Fetch connection details
+    try {
+      await this.fetchConnectionDetails();
+      this.renderFullWindowApp(fullWindowContainer);
+    } catch {
+      fullWindowContainer.innerHTML = `
+        <div style="display: flex; align-items: center; justify-content: center; height: 100%; flex-direction: column; gap: 16px; padding: 24px;">
+          <p style="color: #db1b06; font-size: 16px; font-weight: 600;">Erreur de connexion</p>
+          <p style="color: #6b7280; font-size: 14px; text-align: center;">Impossible de se connecter au serveur. Veuillez réessayer.</p>
+        </div>
+      `;
+    }
+  }
+
+  private renderFullWindowApp(container: HTMLElement) {
+    if (!this.connectionDetails) return;
+
+    container.innerHTML = '';
+
+    const reactMount = document.createElement('div');
+    reactMount.style.width = '100%';
+    reactMount.style.height = '100%';
+    reactMount.style.display = 'flex';
+    reactMount.style.flexDirection = 'column';
+    container.appendChild(reactMount);
+
+    this.reactRoot = ReactDOM.createRoot(reactMount);
+
+    if (this.connectionDetails.serverUrl && this.connectionDetails.participantToken) {
+      this.reactRoot.render(
+        <WidgetRoom
+          serverUrl={this.connectionDetails.serverUrl}
+          participantToken={this.connectionDetails.participantToken}
+          agent={this.connectionDetails.agent}
+          onDisconnected={() => {
+            // In fullWindow mode, just show a message or reload
+            container.innerHTML = `
+              <div style="display: flex; align-items: center; justify-content: center; height: 100%; flex-direction: column; gap: 16px;">
+                <p style="color: #6b7280; font-size: 16px;">Session terminée</p>
+                <button onclick="location.reload()" style="padding: 12px 24px; background: #0891b2; color: white; border: none; border-radius: 8px; cursor: pointer; font-size: 14px;">Recommencer</button>
+              </div>
+            `;
+          }}
+        />
+      );
+    }
+  }
+
+  private getFullWindowStyles() {
+    return `
+      html, body {
+        margin: 0;
+        padding: 0;
+        height: 100%;
+        overflow: hidden;
+      }
+
+      #adexgenie-widget-root {
+        width: 100%;
+        height: 100%;
+      }
+
+      .ag-fullwindow-container {
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        width: 100vw;
+        height: 100vh;
+        background: #f9f9f6;
+        display: flex;
+        flex-direction: column;
+        overflow: hidden;
+        z-index: 999999;
+      }
+
+      .ag-fullwindow-container > div {
+        height: 100%;
+        display: flex;
+        flex-direction: column;
+      }
+
+      .ag-fullwindow-container [data-lk-theme],
+      .ag-fullwindow-container .lk-room-container {
+        height: 100%;
+        display: flex;
+        flex-direction: column;
+        flex: 1;
+      }
+    `;
   }
 
   private getStyles() {

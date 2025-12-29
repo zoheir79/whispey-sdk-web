@@ -107,6 +107,7 @@ class AdexGenieWidget {
   private agentTypeOverride: AgentInfo['type'] | undefined;
   private agentNameOverride: string | undefined;
   private displayMode: DisplayMode;
+  private chatPadding: string;
   private reactRoot: ReturnType<typeof ReactDOM.createRoot> | null = null;
   private fab: HTMLButtonElement | null = null;
 
@@ -118,6 +119,7 @@ class AdexGenieWidget {
     agentType?: AgentInfo['type'];
     agentName?: string;
     displayMode?: DisplayMode;
+    chatPadding?: string;
   }) {
     this.apiUrl = config.apiUrl;
     this.agentId = config.agentId;
@@ -126,6 +128,7 @@ class AdexGenieWidget {
     this.agentTypeOverride = config.agentType;
     this.agentNameOverride = config.agentName;
     this.displayMode = config.displayMode || 'popup';
+    this.chatPadding = config.chatPadding || '0';
 
     // Create container directly in body
     this.container = document.createElement('div');
@@ -256,6 +259,8 @@ class AdexGenieWidget {
         flex-direction: column;
         overflow: hidden;
         z-index: 999999;
+        padding: ${this.chatPadding};
+        box-sizing: border-box;
       }
 
       .ag-fullwindow-container > div {
@@ -345,6 +350,8 @@ class AdexGenieWidget {
         transform: translateY(20px) scale(0.95);
         pointer-events: none;
         transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+        padding: ${this.chatPadding};
+        box-sizing: border-box;
       }
 
       .ag-widget-container.active {

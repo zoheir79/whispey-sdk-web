@@ -13,6 +13,19 @@ class AdexGenieWidget {
     this.init();
   }
 
+  isDomainAuthorized(allowedDomains) {
+    if (!allowedDomains || allowedDomains.length === 0) {
+      return true;
+    }
+
+    const currentDomain = window.location.hostname.toLowerCase();
+
+    return allowedDomains.some((domain) => {
+      const allowedDomain = domain.toLowerCase();
+      return currentDomain === allowedDomain || currentDomain.endsWith('.' + allowedDomain);
+    });
+  }
+
   init() {
     // Create container
     this.container = document.createElement('div');
@@ -134,6 +147,20 @@ class AdexGenieWidget {
       }
 
       const data = await response.json();
+
+      // Check dynamic allowed domains from API
+      const apiAllowedDomains =
+        data.allowed_domains ||
+        data.allowedDomains ||
+        data.agent?.allowed_domains ||
+        data.agent?.allowedDomains;
+
+      if (!this.isDomainAuthorized(apiAllowedDomains)) {
+        const errorMsg = `AdexGenie Widget: Domain "${window.location.hostname}" is not authorized.`;
+        console.error(errorMsg);
+        throw new Error(errorMsg);
+      }
+
       return {
         serverUrl: data.url || data.server_url || data.serverUrl,
         token: data.token || data.participant_token || data.participantToken,

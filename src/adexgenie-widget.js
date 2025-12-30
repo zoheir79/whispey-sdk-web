@@ -81,6 +81,7 @@ import { Room } from 'livekit-client';
         agentId: null,
         apiUrl: null, // URL de l'API pour récupérer le JWT
         apiKey: null, // Clé API publique
+        allowedDomains: [], // List of authorized domains
         // Couleurs du thème AdexGenie (basées sur le logo)
         primaryColor: '#00A7E1', // Bleu cyan principal
         secondaryColor: '#0066A1', // Bleu foncé
@@ -128,7 +129,21 @@ import { Room } from 'livekit-client';
       this.createWidget();
     }
 
-    createWidget() {
+    isDomainAuthorized(allowedDomains) {
+      if (!allowedDomains || allowedDomains.length === 0) {
+        return true; // No restriction if allowedDomains is not provided or empty
+      }
+
+      const currentDomain = window.location.hostname.toLowerCase();
+
+      return allowedDomains.some((domain) => {
+        const allowedDomain = domain.toLowerCase();
+        // Match exact domain or subdomains (e.g., "example.com" matches "sub.example.com")
+        return currentDomain === allowedDomain || currentDomain.endsWith('.' + allowedDomain);
+      });
+    }
+
+  createWidget() {
       this['AG-container'] = document.createElement('div');
       this['AG-container'].id = 'adexgenie-widget-root';
       // Remove default styles here, rely on CSS class
@@ -596,6 +611,20 @@ import { Room } from 'livekit-client';
         }
 
         const apiData = await response.json();
+
+        // Check dynamic allowed domains from API
+        const apiAllowedDomains =
+          apiData.allowed_domains ||
+          apiData.allowedDomains ||
+          apiData.agent?.allowed_domains ||
+          apiData.agent?.allowedDomains;
+
+        if (!this.isDomainAuthorized(apiAllowedDomains)) {
+          const errorMsg = `AdexGenie Widget: Domain "${window.location.hostname}" is not authorized.`;
+          console.error(errorMsg);
+          this.showError('Authorization Error', errorMsg);
+          throw new Error(errorMsg);
+        }
 
         // Formater les détails de connexion
         this['AG-connectionDetails'] = {

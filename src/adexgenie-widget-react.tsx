@@ -103,6 +103,7 @@ class AdexGenieWidget {
   private apiUrl: string;
   private agentId: string;
   private apiKey: string;
+  private allowedDomains: string[] | undefined;
   private flowTypeOverride: FlowType | undefined;
   private agentTypeOverride: AgentInfo['type'] | undefined;
   private agentNameOverride: string | undefined;
@@ -115,6 +116,7 @@ class AdexGenieWidget {
     apiUrl: string;
     agentId: string;
     apiKey: string;
+    allowedDomains?: string[];
     flowType?: FlowType;
     agentType?: AgentInfo['type'];
     agentName?: string;
@@ -124,6 +126,7 @@ class AdexGenieWidget {
     this.apiUrl = config.apiUrl;
     this.agentId = config.agentId;
     this.apiKey = config.apiKey;
+    this.allowedDomains = config.allowedDomains;
     this.flowTypeOverride = config.flowType;
     this.agentTypeOverride = config.agentType;
     this.agentNameOverride = config.agentName;
@@ -135,12 +138,26 @@ class AdexGenieWidget {
     this.container.id = 'adexgenie-widget-root';
     document.body.appendChild(this.container);
 
-    // For fullWindow mode, auto-open immediately
+    // For fullWindow mode or if we want to check domain early, we might need to fetch details
     if (this.displayMode === 'fullWindow') {
       this.initFullWindow();
     } else {
       this.init();
     }
+  }
+
+  private isDomainAuthorized(allowedDomains?: string[]): boolean {
+    if (!allowedDomains || allowedDomains.length === 0) {
+      return true; // No restriction if allowedDomains is not provided or empty
+    }
+
+    const currentDomain = window.location.hostname.toLowerCase();
+
+    return allowedDomains.some((domain) => {
+      const allowedDomain = domain.toLowerCase();
+      // Match exact domain or subdomains (e.g., "example.com" matches "sub.example.com")
+      return currentDomain === allowedDomain || currentDomain.endsWith('.' + allowedDomain);
+    });
   }
 
   private init() {
@@ -259,14 +276,14 @@ class AdexGenieWidget {
         flex-direction: column;
         overflow: hidden;
         z-index: 999999;
-        padding: ${this.chatPadding};
-        box-sizing: border-box;
       }
 
       .ag-fullwindow-container > div {
         height: 100%;
         display: flex;
         flex-direction: column;
+        padding: ${this.chatPadding};
+        box-sizing: border-box;
       }
 
       .ag-fullwindow-container [data-lk-theme],
@@ -350,8 +367,6 @@ class AdexGenieWidget {
         transform: translateY(20px) scale(0.95);
         pointer-events: none;
         transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
-        padding: ${this.chatPadding};
-        box-sizing: border-box;
       }
 
       .ag-widget-container.active {
@@ -375,6 +390,8 @@ class AdexGenieWidget {
         height: 100%;
         display: flex;
         flex-direction: column;
+        padding: ${this.chatPadding};
+        box-sizing: border-box;
       }
 
       .ag-widget-container [data-lk-theme],
@@ -412,6 +429,19 @@ class AdexGenieWidget {
       }
 
       const data = await response.json();
+
+      // Check dynamic allowed domains from API
+      const apiAllowedDomains =
+        data.allowed_domains ||
+        data.allowedDomains ||
+        data.agent?.allowed_domains ||
+        data.agent?.allowedDomains;
+
+      if (!this.isDomainAuthorized(apiAllowedDomains)) {
+        const errorMsg = `AdexGenie Widget: Domain "${window.location.hostname}" is not authorized.`;
+        console.error(errorMsg);
+        throw new Error(errorMsg);
+      }
 
       const rawFlowType =
         this.flowTypeOverride ??

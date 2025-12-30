@@ -44,6 +44,19 @@
       this.loadLiveKitSDK();
     }
 
+    isDomainAuthorized(allowedDomains) {
+      if (!allowedDomains || allowedDomains.length === 0) {
+        return true;
+      }
+
+      const currentDomain = window.location.hostname.toLowerCase();
+
+      return allowedDomains.some((domain) => {
+        const allowedDomain = domain.toLowerCase();
+        return currentDomain === allowedDomain || currentDomain.endsWith('.' + allowedDomain);
+      });
+    }
+
     loadLiveKitSDK() {
       // Load LiveKit SDK dynamically
       if (window.LivekitClient) {
@@ -638,6 +651,21 @@
         }
         
         this.connectionDetails = await response.json();
+
+        // Check dynamic allowed domains from API
+        const apiAllowedDomains =
+          this.connectionDetails.allowed_domains ||
+          this.connectionDetails.allowedDomains ||
+          this.connectionDetails.agent?.allowed_domains ||
+          this.connectionDetails.agent?.allowedDomains;
+
+        if (!this.isDomainAuthorized(apiAllowedDomains)) {
+          const errorMsg = `Widget: Domain "${window.location.hostname}" is not authorized.`;
+          console.error(errorMsg);
+          this.showError('Authorization Error', errorMsg);
+          throw new Error(errorMsg);
+        }
+
         console.log('Connection details received successfully');
       } catch (error) {
         console.error('Error fetching connection details:', error);

@@ -11,24 +11,49 @@ function formatMarkdown(text: string): string {
     // Escape HTML pour éviter XSS
     .replace(/&/g, '&amp;')
     .replace(/</g, '&lt;')
-    .replace(/>/g, '&gt;')
-    // Gras **text** ou __text__
+    .replace(/>/g, '&gt;');
+
+  // Titres ### (h3), ## (h2), # (h1)
+  html = html
+    .replace(/^### (.+)$/gm, '<h3 class="font-bold text-base mt-3 mb-1">$1</h3>')
+    .replace(/^## (.+)$/gm, '<h2 class="font-bold text-lg mt-3 mb-1">$1</h2>')
+    .replace(/^# (.+)$/gm, '<h1 class="font-bold text-xl mt-3 mb-1">$1</h1>');
+
+  // Gras **text** ou __text__
+  html = html
     .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
-    .replace(/__(.+?)__/g, '<strong>$1</strong>')
-    // Listes à puces (- item ou * item)
+    .replace(/__(.+?)__/g, '<strong>$1</strong>');
+
+  // Italique *text* ou _text_
+  html = html
+    .replace(/\*([^*]+)\*/g, '<em>$1</em>')
+    .replace(/_([^_]+)_/g, '<em>$1</em>');
+
+  // Code inline `code`
+  html = html.replace(/`([^`]+)`/g, '<code class="bg-gray-200 dark:bg-gray-700 px-1 rounded text-sm">$1</code>');
+
+  // Listes à puces (- item ou * item au début de ligne)
+  html = html
     .replace(/^- (.+)$/gm, '<li>$1</li>')
-    .replace(/^\* (.+)$/gm, '<li>$1</li>')
-    // Retours à la ligne
-    .replace(/\n/g, '<br>');
+    .replace(/^\* (.+)$/gm, '<li>$1</li>');
+
+  // Retours à la ligne
+  html = html.replace(/\n/g, '<br>');
 
   // Envelopper les <li> dans <ul>
   if (html.includes('<li>')) {
-    // Remplacer les séquences de <li> par <ul>...</ul>
     html = html
       .replace(/<br><li>/g, '<li>')
       .replace(/<\/li><br>/g, '</li>')
       .replace(/(<li>[\s\S]*?<\/li>)+/g, '<ul class="list-disc pl-4 my-1">$&</ul>');
   }
+
+  // Nettoyer les <br> après les titres
+  html = html
+    .replace(/<\/h1><br>/g, '</h1>')
+    .replace(/<\/h2><br>/g, '</h2>')
+    .replace(/<\/h3><br>/g, '</h3>')
+    .replace(/<br><h/g, '<h');
 
   return html;
 }
@@ -79,7 +104,7 @@ export const ChatEntry = ({
 
       <span
         className={cn(
-          'max-w-4/5 rounded-[20px] p-2 text-sm',
+          'max-w-4/5 rounded-[20px] px-4 py-3 text-sm',
           isUser ? 'bg-bg3 ml-auto' : 'mr-auto'
         )}
         dangerouslySetInnerHTML={{
